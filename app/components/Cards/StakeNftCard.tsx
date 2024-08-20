@@ -73,12 +73,24 @@ const StakeNftCard = ({ stakedNfts, index }: Props) => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 px-4 py-2 rounded bg-darkGray">
-        <h5 className="text-primary">reward</h5>
-        <div className="flex gap-1 items-end">
-          <h4>{stakedNfts.reward}</h4>
-          <h4>{stakedNfts.token}</h4>
-          <p>/day</p>
+      <div className="flex flex-col gap-4">
+        <div className="flex gap-1 w-full items-center">
+          <h5 className="text-primary">rewards</h5>
+          <div className="w-full h-[2px] rounded bg-primary"></div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex px-2 py-1 rounded bg-darkGray">
+            <p>
+              {stakedNfts.reward} {stakedNfts.token}
+            </p>
+            <h5>/day</h5>
+          </div>
+          <div className="flex px-2 py-1 rounded bg-darkGray">
+            <p>
+              {stakedNfts.reward} {stakedNfts.token}
+            </p>
+            <h5>/day</h5>
+          </div>
         </div>
       </div>
       {showPopup && <StakePopup nft={stakedNfts} onClose={handleShwoPopup} />}

@@ -39,7 +39,10 @@ const Collection = () => {
         <h1>{collection.collection}</h1>
         <p className="text-textGray">{collection.desc}</p>
       </div>
-      <h2>My NFT's</h2>
+      <div className="flex">
+        <h2>My NFT</h2>
+        <h2 className="lowercase">s</h2>
+      </div>
       <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
         {collection.nfts.map((nft, index) => {
           if (nft.staked) {

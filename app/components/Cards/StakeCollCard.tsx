@@ -61,8 +61,10 @@ const StakeCollCard = ({ stakedNfts, index }: Props) => {
 
         <div className="w-full grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-1 w-full">
-            <h5>Staked NFT's</h5>
-            <p>{stakedNfts.staked}</p>
+            <h5>Staked NFTs</h5>
+            <p>
+              {stakedNfts.staked}/{stakedNfts.quantity}
+            </p>
           </div>
         </div>
       </motion.div>

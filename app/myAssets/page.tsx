@@ -138,7 +138,10 @@ const page = () => {
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex gap-4 items-center justify-between">
             <div className="flex gap-4">
-              <h2>NFT's</h2>
+              <div className="flex">
+                <h2>NFT</h2>
+                <h2 className="lowercase">s</h2>
+              </div>
               <h2 className="text-textGray">{`(0${nfts.length})`}</h2>
             </div>
           </div>

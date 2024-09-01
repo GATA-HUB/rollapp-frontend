@@ -43,7 +43,10 @@ const Collection = () => {
         <h1>{collection.collection}</h1>
         <p className="text-textGray">{collection.desc}</p>
       </div>
-      <h2>NFTs</h2>
+      <div className="flex">
+        <h2>NFT</h2>
+        <h2 className="lowercase">s</h2>
+      </div>
       <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
         {collection.nfts.map((nft, index) => (
           <motion.div
@@ -51,10 +54,10 @@ const Collection = () => {
             style={{
               border: "1px solid rgba(255, 255, 255, 0.1)",
             }}
-            whileHover={{
-              border: "1px solid rgba(1, 239, 156, 1)",
-              boxShadow: "8px 8px 0px #01EF9C",
-            }}
+            // whileHover={{
+            //   border: "1px solid rgba(1, 239, 156, 1)",
+            //   boxShadow: "8px 8px 0px #01EF9C",
+            // }}
             className="flex flex-col gap-2 p-4 rounded-lg "
           >
             <div className="w-full aspect-square relative overflow-hidden rounded">

@@ -1,7 +1,12 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
+import { SecondaryButton } from "../components/Buttons";
+import StakeNftCard from "../components/Cards/StakeNftCard";
+import NftCard from "../components/Cards/NftCard";
 import MintCard from "../components/Cards/MintCard";
+import CollectionNftCard from "../components/Cards/CollectionNftCard";
+import MintPopup from "../components/Popup/MintPopup";
 import MintCollCard from "../components/Cards/MintCollCard";
 import mintData from "../../public/mintColl.json";
 import {ethers} from "ethers";
@@ -9,12 +14,6 @@ import {getAllCollectionsMetadata, registerMintListeners} from "@/app/utils/mint
 import {ENV} from "@/env";
 import {BaseCollection} from "@/app/types/nft";
 import {store} from "@/app/store";
-
-interface Nfts {
-  image: string;
-  name: string;
-  minted: boolean;
-}
 
 const page = () => {
   const initialMintNfts: BaseCollection[] = mintData;

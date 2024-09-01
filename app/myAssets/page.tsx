@@ -142,6 +142,13 @@ const page = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="group w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
               <div className="flex flex-col gap-1 z-10">
+                <h5>tokens</h5>
+                <h1>25</h1>
+              </div>
+            </div>
+
+            <div className="group w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
+              <div className="flex flex-col gap-1 z-10">
                 <h5>NFTs</h5>
                 <h1>{totalBalance}</h1>
               </div>
@@ -168,7 +175,10 @@ const page = () => {
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex gap-4 items-center justify-between">
             <div className="flex gap-4">
-              <h2>NFT's</h2>
+              <div className="flex">
+                <h2>NFT</h2>
+                <h2 className="lowercase">s</h2>
+              </div>
               <h2 className="text-textGray">{`(0${ownedNFTs.length})`}</h2>
             </div>
           </div>

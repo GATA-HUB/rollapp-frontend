@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import collections from "../../../public/collections.json";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -18,6 +18,17 @@ interface NftsInCollection {
   staked: boolean;
 }
 
+interface CollectionNfts {
+  nfts: NftsInCollection[];
+  collection: string;
+  creator: string;
+  desc: string;
+  quantity: number;
+  staked: number;
+  endingDate: string;
+  reward: number;
+  token: string;
+}
 
 const Collection = () => {
   const params = useParams();
@@ -51,7 +62,10 @@ const Collection = () => {
         <h1>{collection.collection}</h1>
         <p className="text-textGray">{collection.desc}</p>
       </div>
-      <h2>My NFT's</h2>
+      <div className="flex">
+        <h2>My NFT</h2>
+        <h2 className="lowercase">s</h2>
+      </div>
       <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
         {nfts.map((nft, index) => {
             return (
@@ -79,7 +93,8 @@ const Collection = () => {
                 <SecondaryButton onClick={() => stakeNfts([nft.tokenId])}>Stake</SecondaryButton>
               </motion.div>
             );
-        })}
+          }
+        }
       </div>
     </div>
   );

@@ -1,23 +1,16 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
+import React, { useEffect, useState } from "react";
 import StakeCollCard from "../components/Cards/StakeCollCard";
 import collectionData from "../../public/collections.json";
-import {useWeb3React} from "@web3-react/core";
+import { useWeb3React } from "@web3-react/core";
 import {
   fetchNFTCollectionDetails,
-  getERC20Info,
   getPoolContracts,
-  getPoolInfo,
-  getPoolInfoFromAddresses,
-  getUserInfoFromAddresses
+  getUserInfoFromAddresses,
 } from "@/app/utils/contracts";
-import {cachedGet, checkColStore, ipfsReplace, ZERO_ADDRESS} from "@/app/utils";
-import axios from "axios";
-import {chainInfo, REACT_APP_NETWORK_ID} from "@/app/chainInfo";
-import {StakedCollection} from "@/app/types/nft";
-import {ENV} from "@/env";
+import { StakedCollection } from "@/app/types/nft";
+import { ENV } from "@/env";
 
 interface NftsInCollection {
   image: string;

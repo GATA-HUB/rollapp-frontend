@@ -17,14 +17,15 @@ import ExploreNftCard from "@/app/components/Cards/ExploreNftCard";
 import { formatEther } from "ethers/lib/utils";
 import { store } from "@/app/store";
 import { useWeb3React } from "@web3-react/core";
-import {useOwnedNFTCount} from "@/app/hooks/useOwnedNFTCount";
+import { useOwnedNFTCount } from "@/app/hooks/useOwnedNFTCount";
+import Link from "next/link";
 
 const page = () => {
   const endedIncentiveCollections: BaseCollection[] = collectionData;
   const [activeIncentivizedCollections, setActiveIncentivizedCollections] =
     useState<StakedCollection[]>([]);
   const { account, chainId, library } = useWeb3React();
-  const {totalBalance: totalNFTBalance} = useOwnedNFTCount();
+  const { totalBalance: totalNFTBalance } = useOwnedNFTCount();
 
   const [showBalance, setShowBalance] = useState<boolean>(false);
   const handleShowBalance = () => {
@@ -80,20 +81,49 @@ const page = () => {
         {/* Loyalty */}
         <div className="flex flex-col gap-2 col-span-1">
           <h2 className="text-white">loyalty</h2>
-          <div className="group relative w-full flex flex-col gap-1 justify-end p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10 overflow-hidden cursor-pointer">
-            <div className="flex flex-col gap-1 z-10">
-              <h5>total points</h5>
-              <h1>1000</h1>
+          <Link href="https://gatahub-loyalty.netlify.app/">
+            <div className="group relative w-full h-full max-h-[87.48px] flex flex-col gap-1 justify-end p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10 overflow-hidden cursor-pointer">
+              <div className="flex flex-col h-full justify-start group-hover:mb-[86px] z-10 gap-8 transition-all duration-300 ease-in-out">
+                <div className="flex flex-col gap-1">
+                  <h5>total points</h5>
+                  <h1>1000</h1>
+                </div>
+                <div className="flex gap-2 items-center justify-center w-full min-h-[54px]">
+                  <p>Increase your points</p>
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 12L21.5 2.5M21.5 2.5H17M21.5 2.5V7"
+                        stroke="white"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M12 2.5C12 2.77614 11.7761 3 11.5 3H6C4.34315 3 3 4.34315 3 6V18C3 19.6569 4.34315 21 6 21H18C19.6569 21 21 19.6569 21 18V12.5C21 12.2239 21.2239 12 21.5 12V12C21.7761 12 22 12.2239 22 12.5V18C22 20.2091 20.2091 22 18 22H6C3.79086 22 2 20.2091 2 18V6C2 3.79086 3.79086 2 6 2H11.5C11.7761 2 12 2.22386 12 2.5V2.5Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute right-0 mb-[-18px] group-hover:mb-[-48px] transition-all duration-300 ease-in-out">
+                <Image
+                  width={192}
+                  height={131}
+                  alt=""
+                  src="/bg/pointsGreen.png"
+                />
+              </div>
             </div>
-            <div className="absolute right-0 mb-[-18px] group-hover:mb-[-48px] transition-all duration-300 ease-in-out">
-              <Image
-                width={192}
-                height={131}
-                alt=""
-                src="/bg/pointsGreen.png"
-              />
-            </div>
-          </div>
+          </Link>
         </div>
 
         {/* Assets */}
@@ -159,30 +189,30 @@ const page = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 col-span-1 w-full gap-4">
-              <div className="w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
-                <div className="flex flex-col gap-1 z-10">
-                  <h5>NFTs</h5>
-                  <h1>{totalNFTBalance}</h1>
-                </div>
+            <div className="grid grid-cols-1 col-span-1 w-full gap-4">
+              <div className="flex flex-col gap-1 z-10">
+                <h5>NFTs</h5>
+                <h1>{totalNFTBalance}</h1>
               </div>
             </div>
+          </div>
 
-            {/* Rewards */}
-            <div className="flex flex-col gap-2 col-span-1">
-              <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
-                <div className="flex flex-col gap-1 z-10">
-                  <h5>Rewards</h5>
-                  <h1>{store.totalReward}</h1>
-                </div>
-                <div className="flex gap-2">
-                  <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
-                </div>
+          {/* Rewards */}
+          <div className="flex flex-col gap-2 col-span-1">
+            <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
+              <div className="flex flex-col gap-1 z-10">
+                <h5>Rewards</h5>
+                <h1>{store.totalReward}</h1>
+              </div>
+              <div className="flex gap-2">
+                <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* my staked NFT's */}
 
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex gap-4 items-center justify-between">
@@ -199,6 +229,8 @@ const page = () => {
           })}
         </div>
       </div>
+
+      {/* my minted NFT's */}
 
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex gap-4 items-center justify-between">

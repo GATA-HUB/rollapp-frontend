@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { SecondaryButton } from "../components/Buttons";
 import NFTAssetCard from "../components/Cards/NFTAssetCard";
 import TokenAssetCard from "../components/Cards/TokenAssetCard";
@@ -11,15 +11,15 @@ import {
 } from "@/app/utils/mintcontracts";
 import { BaseCollection } from "@/app/types/nft";
 import { useWeb3React } from "@web3-react/core";
-import { store } from "@/app/store";
 import { claimRewards } from "@/app/utils/contracts";
+import { useAppContext } from "@/app/context/AppContext";
 
 interface Token {
   image: string;
   collection: string;
 }
 
-const page = () => {
+const Page = () => {
   const [tokens, setTokens] = useState<Token[]>([
     { image: "/tokenC/eth.png", collection: "ETH" },
     { image: "/tokenC/eth.png", collection: "ETH" },
@@ -32,42 +32,82 @@ const page = () => {
   const handleShowBalance = () => {
     setShowBalance(!showBalance);
   };
+
   const contracts = ENV.liveMints;
-  const [ownedNFTs, setOwnedNFTs] = useState<BaseCollection[]>([]);
-  const [availableNFTs, setAvailableNFTs] = useState(new Map<string, number>());
-  const [totalBalance, setTotalBalance] = useState(0);
   const { account, chainId, library } = useWeb3React();
-  useEffect(() => {
-    if(!account)
-      return;
-  const getAllNFTBalances = async () => {
-    const available = [];
-    let total = 0;
-    for(let i = 0; i < contracts.length; i++) {
+  const { state, dispatch } = useAppContext();
+
+  const fetchAssetsData = useCallback(async (isBackground = false) => {
+    if (!account) return;
+
+    if (!isBackground) {
+      dispatch({ type: 'SET_LOADING', payload: { key: 'assets', value: true } });
+    }
+
+    try {
+      const available = [];
+      let total = 0;
+      const availableNFTs = new Map<string, number>();
+
+      for (let i = 0; i < contracts.length; i++) {
         const balance = await balanceOfUser(account, contracts[i]);
-        if(balance > 0) {
+        if (balance > 0) {
           available.push(contracts[i]);
           total += balance;
         }
-        console.log(balance, contracts[i]);
-        setAvailableNFTs(prev => prev.set(contracts[i], balance));
+        availableNFTs.set(contracts[i], balance);
       }
-    setTotalBalance(total);
-    getAllCollectionsMetadata(available).then(setOwnedNFTs).catch(console.error);
-    };
-    getAllNFTBalances();
-  }, [contracts, account]);
+
+      const ownedNFTs = await getAllCollectionsMetadata(available);
+
+      dispatch({
+        type: 'SET_ASSETS_DATA',
+        payload: {
+          ownedNFTs,
+          availableNFTs: Object.fromEntries(availableNFTs),
+          totalBalance: total
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching assets data:", error);
+    } finally {
+      if (!isBackground) {
+        dispatch({ type: 'SET_LOADING', payload: { key: 'assets', value: false } });
+      }
+    }
+  }, [account, contracts, dispatch]);
+
+  useEffect(() => {
+    if (!state.assets) {
+      fetchAssetsData();
+    } else {
+      // If data exists, fetch in the background
+      fetchAssetsData(true);
+    }
+
+    // Set up interval for background fetching
+    const intervalId = setInterval(() => {
+      fetchAssetsData(true);
+    }, ENV.globalBackgroundRefreshInterval); // Fetch every minute
+
+    return () => clearInterval(intervalId);
+  }, [fetchAssetsData]);
+
   const handleClaim = async () => {
-    store.ActiveIncentivizedCollections.forEach(async (collection) => {
+    state.dashboard?.activeIncentivizedCollections?.forEach(async (collection) => {
       claimRewards(
         collection.address,
         collection.poolIndex,
         chainId,
         library.getSigner(),
         account
-      ).then(async (tx) => {});
+      ).then(async (tx) => {
+        // Handle successful claim
+        fetchAssetsData(true);
+      });
     });
   };
+
   return (
     <div className="page">
       <div className="w-full grid grid-cols-7 gap-4 items-end">
@@ -150,7 +190,7 @@ const page = () => {
             <div className="group w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
               <div className="flex flex-col gap-1 z-10">
                 <h5>NFTs</h5>
-                <h1>{totalBalance}</h1>
+                <h1>{state.assets?.totalBalance || 0}</h1>
               </div>
             </div>
           </div>
@@ -161,7 +201,7 @@ const page = () => {
           <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10 overflow-hidden">
             <div className="flex flex-col gap-1 z-10">
               <h5>Rewards</h5>
-              <h1>{store.totalReward}</h1>
+              <h1>{state.dashboard?.totalReward || '0'}</h1>
             </div>
             <div className="flex gap-2">
               <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
@@ -179,14 +219,22 @@ const page = () => {
                 <h2>NFT</h2>
                 <h2 className="lowercase">s</h2>
               </div>
-              <h2 className="text-textGray">{`(0${ownedNFTs.length})`}</h2>
+              <h2 className="text-textGray">{`(0${state.assets?.ownedNFTs?.length || 0})`}</h2>
             </div>
           </div>
 
           <div className="w-full flex flex-col gap-2">
-            {ownedNFTs.map((nft, i) => {
-              return <NFTAssetCard key={i} asset={nft} amount={availableNFTs.get(nft.address!)!} />;
-            })}
+            {state.loading.assets ? (
+              <div>Loading...</div>
+            ) : (
+              state.assets?.ownedNFTs?.map((nft, i) => (
+                <NFTAssetCard
+                  key={i}
+                  asset={nft}
+                  amount={state.assets?.availableNFTs[nft.address] || 0}
+                />
+              ))
+            )}
           </div>
         </div>
 
@@ -210,4 +258,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { SecondaryButton } from "../components/Buttons";
 import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
 import collectionData from "../../public/collections.json";
-import { BaseCollection, StakedCollection } from "@/app/types/nft";
 import {
   claimRewards,
   getERC20Info,
@@ -15,32 +14,33 @@ import {
 import { getAllCollectionsMetadata } from "@/app/utils/mintcontracts";
 import ExploreNftCard from "@/app/components/Cards/ExploreNftCard";
 import { formatEther } from "ethers/lib/utils";
-import { store } from "@/app/store";
 import { useWeb3React } from "@web3-react/core";
 import { useOwnedNFTCount } from "@/app/hooks/useOwnedNFTCount";
 import Link from "next/link";
+import { useAppContext } from "@/app/context/AppContext";
+import {ENV} from "@/env";
 
-const page = () => {
-  const endedIncentiveCollections: BaseCollection[] = collectionData;
-  const [activeIncentivizedCollections, setActiveIncentivizedCollections] =
-    useState<StakedCollection[]>([]);
+const Page = () => {
+  const endedIncentiveCollections = collectionData;
   const { account, chainId, library } = useWeb3React();
   const { totalBalance: totalNFTBalance } = useOwnedNFTCount();
+  const { state, dispatch } = useAppContext();
 
-  const [showBalance, setShowBalance] = useState<boolean>(false);
+  const [showBalance, setShowBalance] = useState(false);
   const handleShowBalance = () => {
     setShowBalance(!showBalance);
   };
 
-  useEffect(() => {
-    const getIncentivizedCollections = async () => {
+  const fetchDashboardData = useCallback(async (isBackground = false) => {
+    if (!isBackground) {
+      dispatch({ type: 'SET_LOADING', payload: { key: 'dashboard', value: true } });
+    }
+
+    try {
       const poolContracts = await getPoolContracts();
       const allPoolsInfo = await getPoolInfoFromAddresses(poolContracts);
-      console.log("info", allPoolsInfo);
-      const allCollectionsMetadata = await getAllCollectionsMetadata(
-        poolContracts
-      );
-      store.BaseCollections = allCollectionsMetadata;
+      const allCollectionsMetadata = await getAllCollectionsMetadata(poolContracts);
+
       const mappedMetadata = await Promise.all(
         allCollectionsMetadata.map(async (collection) => {
           const poolInfo = allPoolsInfo.find(
@@ -56,22 +56,48 @@ const page = () => {
           };
         })
       );
-      console.log("mappedMetadata", mappedMetadata);
-      setActiveIncentivizedCollections(mappedMetadata);
-      store.ActiveIncentivizedCollections = mappedMetadata;
-    };
-    getIncentivizedCollections();
-  }, []);
+
+      const totalReward = mappedMetadata.reduce((total, collection) => total + parseFloat(collection.reward), 0).toFixed(2);
+
+      dispatch({ type: 'SET_DASHBOARD_DATA', payload: {
+        activeIncentivizedCollections: mappedMetadata,
+        totalReward: totalReward,
+      }});
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      if (!isBackground) {
+        dispatch({ type: 'SET_LOADING', payload: { key: 'dashboard', value: false } });
+      }
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!state.dashboard) {
+      fetchDashboardData();
+    }
+
+    // Set up interval for background fetching
+    const intervalId = setInterval(() => {
+      console.log('Fetching data in background');
+      fetchDashboardData(true);
+    }, ENV.globalBackgroundRefreshInterval); // Fetch every minute
+
+    return () => clearInterval(intervalId);
+  }, [fetchDashboardData]);
 
   const handleClaim = async () => {
-    activeIncentivizedCollections.forEach(async (collection) => {
+    state.dashboard?.activeIncentivizedCollections?.forEach(async (collection) => {
       claimRewards(
         collection.address,
         collection.poolIndex,
         chainId,
         library.getSigner(),
         account
-      ).then(async (tx) => {});
+      ).then(async (tx) => {
+        // Handle successful claim
+        fetchDashboardData(true);
+      });
     });
   };
 
@@ -101,12 +127,12 @@ const page = () => {
                       <path
                         d="M12 12L21.5 2.5M21.5 2.5H17M21.5 2.5V7"
                         stroke="white"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                       <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
+                        fillRule="evenodd"
+                        clipRule="evenodd"
                         d="M12 2.5C12 2.77614 11.7761 3 11.5 3H6C4.34315 3 3 4.34315 3 6V18C3 19.6569 4.34315 21 6 21H18C19.6569 21 21 19.6569 21 18V12.5C21 12.2239 21.2239 12 21.5 12V12C21.7761 12 22 12.2239 22 12.5V18C22 20.2091 20.2091 22 18 22H6C3.79086 22 2 20.2091 2 18V6C2 3.79086 3.79086 2 6 2H11.5C11.7761 2 12 2.22386 12 2.5V2.5Z"
                         fill="white"
                       />
@@ -202,7 +228,7 @@ const page = () => {
             <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
               <div className="flex flex-col gap-1 z-10">
                 <h5>Rewards</h5>
-                <h1>{store.totalReward}</h1>
+                <h1>{state.dashboard?.totalReward || '0'}</h1>
               </div>
               <div className="flex gap-2">
                 <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
@@ -218,15 +244,19 @@ const page = () => {
         <div className="w-full flex gap-4 items-center justify-between">
           <div className="flex gap-4">
             <h2>Incentives</h2>
-            <h2 className="text-textGray">{`(0${activeIncentivizedCollections.length})`}</h2>
+            <h2 className="text-textGray">{`(0${state.dashboard?.activeIncentivizedCollections?.length || 0})`}</h2>
           </div>
           {/*<SecondaryButton>view all</SecondaryButton>*/}
         </div>
 
         <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {activeIncentivizedCollections.map((nft, i) => {
-            return <ExploreNftCard key={i} index={i} stakedNfts={nft} />;
-          })}
+          {state.loading.dashboard ? (
+            <div>Loading...</div>
+          ) : (
+            state.dashboard?.activeIncentivizedCollections?.map((nft, i) => (
+              <ExploreNftCard key={i} index={i} stakedNfts={nft} />
+            ))
+          )}
         </div>
       </div>
 
@@ -242,13 +272,13 @@ const page = () => {
         </div>
 
         <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {endedIncentiveCollections.map((nft, i) => {
-            return <ExploreNftCardDummy key={i} index={i} stakedNfts={nft} />;
-          })}
+          {endedIncentiveCollections.map((nft, i) => (
+            <ExploreNftCardDummy key={i} index={i} stakedNfts={nft} />
+          ))}
         </div>
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;

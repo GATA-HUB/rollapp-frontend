@@ -5,6 +5,7 @@ import NavBar from "@/app/components/NavBar/layout";
 import {Providers} from "@/app/providers";
 import {RewardTracker} from "@/app/components/RewardTracker";
 import {OwnedNFTTracker} from "@/app/components/OwnedNFTTracker";
+import { AppProvider } from "@/app/context/AppContext";
 
 const jost = Jost({
   subsets: ["latin"],
@@ -30,12 +31,14 @@ export default function RootLayout({
         className={`w-full bg-black flex flex-col p-8 items-center ${jost.className}`}
       >
       <Providers>
-        <RewardTracker />
-        <OwnedNFTTracker />
-        <NavBar />
-        <div className="w-full max-w-[1440px] flex flex-col items-center">
-          {children}
-        </div>
+        <AppProvider>
+          <RewardTracker />
+          <OwnedNFTTracker />
+          <NavBar />
+          <div className="w-full max-w-[1440px] flex flex-col items-center">
+            {children}
+          </div>
+        </AppProvider>
       </Providers>
       </body>
     </html>

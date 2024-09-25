@@ -3,4 +3,5 @@ export const ENV = {
   liveMints: ['0x9B28891A70ee297Bb2EAa8d6e3b7cC55eaA6dc24', '0xeF4074c9D9C60Acaa3E7472dbB81fac4052fFdD0', '0x644439090D56986F3DA56c42b7Bc864CFA668CE9', '0x0326dc39D9bc972F66dcED2db96af10f9954Bd30'],
   royaltiesPercentage: '5%',
   ipfsGateway: 'https://ipfs.io/ipfs/',
+  globalBackgroundRefreshInterval: 30000
 }

@@ -56,10 +56,10 @@ export async function getAllCollectionsMetadata(liveMints, provider = defaultPro
                 _publicSaleEndTime,
                 maxSupply
             ] = await Promise.all(metadataMethods.map(method => contract[method]()));
-            
+
             const ipfsGatewayMetadata = metadataURI.replace('ipfs://', ENV.ipfsGateway)
             const {description, image} = await fetch(ipfsGatewayMetadata).then(response => response.json());
-            
+
             collectionData = {
                 image: image.replace('ipfs://', ENV.ipfsGateway),
                 collection: name,
@@ -94,6 +94,7 @@ export const registerMintListeners = (contracts, handleTransfer) => {
     });
 
     return () => {
+        console.log('Deregistering mint listeners');
         nftContracts.forEach((contract, index) => {
             contract.off('Transfer', handleTransfer(index));
         });

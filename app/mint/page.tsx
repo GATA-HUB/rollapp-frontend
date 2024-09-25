@@ -1,55 +1,76 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import { SecondaryButton } from "../components/Buttons";
-import StakeNftCard from "../components/Cards/StakeNftCard";
-import NftCard from "../components/Cards/NftCard";
+import React, { useEffect, useCallback } from "react";
 import MintCard from "../components/Cards/MintCard";
-import CollectionNftCard from "../components/Cards/CollectionNftCard";
-import MintPopup from "../components/Popup/MintPopup";
 import MintCollCard from "../components/Cards/MintCollCard";
 import mintData from "../../public/mintColl.json";
-import {ethers} from "ethers";
-import {getAllCollectionsMetadata, registerMintListeners} from "@/app/utils/mintcontracts";
-import {ENV} from "@/env";
-import {BaseCollection} from "@/app/types/nft";
-import {store} from "@/app/store";
+import { ethers } from "ethers";
+import { getAllCollectionsMetadata, registerMintListeners } from "@/app/utils/mintcontracts";
+import { ENV } from "@/env";
+import { BaseCollection } from "@/app/types/nft";
+import { useAppContext } from "@/app/context/AppContext";
 
-const page = () => {
+const Page = () => {
   const initialMintNfts: BaseCollection[] = mintData;
   const contracts = ENV.liveMints;
-  const [liveMints, setLiveMints] = useState<BaseCollection[]>([]);
+  const { state, dispatch } = useAppContext();
 
+  const fetchMintData = useCallback(async (isBackground = false) => {
+    if (!isBackground) {
+      dispatch({ type: 'SET_LOADING', payload: { key: 'mint', value: true } });
+    }
 
-  console.log(contracts);
+    try {
+      const liveMints = await getAllCollectionsMetadata(contracts);
+      dispatch({ type: 'SET_MINT_DATA', payload: { liveMints } });
+    } catch (error) {
+      console.error("Error fetching mint data:", error);
+    } finally {
+      if (!isBackground) {
+        dispatch({ type: 'SET_LOADING', payload: { key: 'mint', value: false } });
+      }
+    }
+  }, [dispatch, contracts]);
 
   useEffect(() => {
-    getAllCollectionsMetadata(contracts).then(liveMints => {
-      setLiveMints(liveMints);
-      store.BaseCollections = liveMints;
-    }).catch(console.error);
+    if (!state.mint) {
+      fetchMintData();
+    } else {
+      // If data exists, fetch in the background
+      fetchMintData(true);
+    }
+
+    // Set up interval for background fetching
+    const intervalId = setInterval(() => {
+      fetchMintData(true);
+    }, ENV.globalBackgroundRefreshInterval); // Fetch every minute
+
     const handleTransfer = (index: number) => (from: string, to: string, tokenId: string) => {
       const contractAddress = contracts[index];
       if (from === ethers.constants.AddressZero) {
         console.log(`NFT ${tokenId} transferred from ${from} to ${to} at contract ${contractAddress}`);
-        setLiveMints(prev => {
-          return prev.map(mint => {
-            if(mint.address === contractAddress) {
-              mint.minted = mint.minted + 1;
+        dispatch({ type: 'SET_MINT_DATA', payload: {
+          liveMints: state.mint.liveMints.map(mint => {
+            if (mint.address === contractAddress) {
+              return { ...mint, minted: mint.minted + 1 };
             }
             return mint;
           })
-        });
+        }});
       }
     };
-    return registerMintListeners(contracts, handleTransfer);
-  }, [contracts])
 
+    const unregisterListeners = registerMintListeners(contracts, handleTransfer);
+
+    return () => {
+      clearInterval(intervalId);
+      unregisterListeners();
+    };
+  }, [fetchMintData, dispatch, contracts]);
 
   return (
     <div className="page">
       {/* on going NFT's */}
-
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex gap-4 items-center justify-between">
           <div className="flex gap-4">
@@ -59,14 +80,17 @@ const page = () => {
         </div>
 
         <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {liveMints.map((nft, i) => {
-              return <MintCard key={i} nft={nft} />;
-          })}
+          {state.loading.mint ? (
+            <div>Loading...</div>
+          ) : (
+            state.mint?.liveMints.map((nft, i) => (
+              <MintCard key={i} nft={nft} />
+            ))
+          )}
         </div>
       </div>
 
       {/* all collections */}
-
       <div className="w-full flex flex-col gap-2">
         <div className="w-full flex gap-4 items-center justify-between">
           <div className="flex gap-4">
@@ -80,6 +104,7 @@ const page = () => {
             if (!nft.endingDate) {
               return <MintCollCard key={i} index={i} nft={nft} />;
             }
+            return null;
           })}
         </div>
       </div>
@@ -87,4 +112,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

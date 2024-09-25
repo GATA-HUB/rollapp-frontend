@@ -93,7 +93,7 @@ const Collection = () => {
                 <SecondaryButton onClick={() => stakeNfts([nft.tokenId])}>Stake</SecondaryButton>
               </motion.div>
             );
-          }
+          })
         }
       </div>
     </div>

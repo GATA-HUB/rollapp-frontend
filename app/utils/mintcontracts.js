@@ -3,6 +3,7 @@ import {chainInfo, REACT_APP_NETWORK_ID} from "../chainInfo";
 import {Contract} from "@ethersproject/contracts";
 import NFTABI from "../contracts/NFT.json";
 import {ENV} from "@/env";
+import { getFromLocalStorage, setToLocalStorage } from "./localStorage";
 
 export const defaultProvider = new ethers.providers.JsonRpcProvider(chainInfo[REACT_APP_NETWORK_ID].REACT_APP_NODE_1);
 export const defaultSigner = defaultProvider.getSigner();
@@ -34,31 +35,50 @@ export async function getAllCollectionsMetadata(liveMints, provider = defaultPro
     const allCollectionsMetadata = [];
     for (let i = 0; i < liveMints.length; i++) {
         const collectionAddress = liveMints[i];
-        const contract = new Contract(collectionAddress, NFTABI, provider);
-        const metadataMethods = ['totalSupply', 'name', 'owner', '_publicSalePrice', 'metadataURI', '_publicSaleEndTime', 'maxSupply'];
-        const [
-            totalSupply,
-            name,
-            owner,
-            _publicSalePrice,
-            metadataURI,
-            _publicSaleEndTime,
-            maxSupply
-        ] = await Promise.all(metadataMethods.map(method => contract[method]()));
-        const ipfsGatewayMetadata = metadataURI.replace('ipfs://', ENV.ipfsGateway)
-        const {description, image} = await fetch(ipfsGatewayMetadata).then(response => response.json());
-        const collectionData = {
-            image: image.replace('ipfs://', ENV.ipfsGateway),
-            collection: name,
-            creator: owner,
-            price: ethers.utils.formatEther(_publicSalePrice),
-            minted: totalSupply.toNumber(),
-            royalties: '5%',
-            endingDate: _publicSaleEndTime.toNumber(),
-            desc: description,
-            quantity: maxSupply.toNumber(),
-            address: collectionAddress,
+        const storageKey = `collection_${collectionAddress}`;
+        let collectionData = getFromLocalStorage(storageKey);
+
+        if (collectionData) {
+            // If data exists in localStorage, only fetch the minted value
+            const contract = new Contract(collectionAddress, NFTABI, provider);
+            const totalSupply = await contract.totalSupply();
+            collectionData.minted = totalSupply.toNumber();
+        } else {
+            // If data doesn't exist in localStorage, fetch all metadata
+            const contract = new Contract(collectionAddress, NFTABI, provider);
+            const metadataMethods = ['totalSupply', 'name', 'owner', '_publicSalePrice', 'metadataURI', '_publicSaleEndTime', 'maxSupply'];
+            const [
+                totalSupply,
+                name,
+                owner,
+                _publicSalePrice,
+                metadataURI,
+                _publicSaleEndTime,
+                maxSupply
+            ] = await Promise.all(metadataMethods.map(method => contract[method]()));
+            
+            const ipfsGatewayMetadata = metadataURI.replace('ipfs://', ENV.ipfsGateway)
+            const {description, image} = await fetch(ipfsGatewayMetadata).then(response => response.json());
+            
+            collectionData = {
+                image: image.replace('ipfs://', ENV.ipfsGateway),
+                collection: name,
+                creator: owner,
+                price: ethers.utils.formatEther(_publicSalePrice),
+                minted: totalSupply.toNumber(),
+                royalties: '5%',
+                endingDate: _publicSaleEndTime.toNumber(),
+                desc: description,
+                quantity: maxSupply.toNumber(),
+                address: collectionAddress,
+            };
+
+            // Store the new data in localStorage
+            const dataToStore = {...collectionData};
+            delete dataToStore.minted; // Don't store the minted value
+            setToLocalStorage(storageKey, dataToStore);
         }
+
         allCollectionsMetadata.push(collectionData);
     }
     console.log("All collections metadata: ", allCollectionsMetadata);

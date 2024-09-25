@@ -3,6 +3,8 @@ import { getTokenContract, getCollectionContract, getContractObj, ZERO_ADDRESS }
 import {chainInfo, REACT_APP_NETWORK_ID} from "../chainInfo";
 import {ENV} from "@/env";
 import {store} from "@/app/store";
+import { getFromLocalStorage, setToLocalStorage } from "@/app/utils/localStorage";
+
 export const tokenDecimal = 6;
 export const defaultProvider = new ethers.providers.JsonRpcProvider(chainInfo[REACT_APP_NETWORK_ID].REACT_APP_NODE_1);
 export const defaultSigner = defaultProvider.getSigner();
@@ -55,12 +57,21 @@ export function calcBigNumber(amount, decimals) {
 }
 
 export async function getERC20Info(address, chainId = null, provider = defaultProvider) {
+    const storageKey = `erc20Details_${address}`;
+    let erc20Details = getFromLocalStorage(storageKey);
+
+    if (erc20Details) {
+        return erc20Details;
+    }
+
     const erc20Contract = getTokenContract(address, chainId, provider);
     try {
         const name = await erc20Contract.name();
         const symbol = await erc20Contract.symbol();
         const decimals = await erc20Contract.decimals();
-        return { name: name, symbol: symbol, decimals: decimals };
+        erc20Details = { name: name, symbol: symbol, decimals: decimals };
+        setToLocalStorage(storageKey, erc20Details);
+        return erc20Details;
     } catch (e) {
         console.log(e);
         return null;
@@ -365,14 +376,26 @@ const abi = [
 
 // Fetch NFT collection details
 export async function fetchNFTCollectionDetails(address) {
+    const storageKey = `nftCollectionDetails_${address}`;
+    let collectionDetails = getFromLocalStorage(storageKey);
+
+    if (collectionDetails) {
+        return collectionDetails;
+    }
+
     try {
         const nftContract = new ethers.Contract(address, abi, defaultProvider);
         const name = await nftContract.name();
         const symbol = await nftContract.symbol();
         const uri = await nftContract.tokenURI(1);
-        return { name, symbol,  address, uri};
+
+        collectionDetails = { name, symbol, address, uri };
+        setToLocalStorage(storageKey, collectionDetails);
+
+        return collectionDetails;
     } catch (error) {
         console.error("Error fetching NFT collection details:", error);
+        return null;
     }
 }
 

@@ -11,6 +11,7 @@ import {
 } from "@/app/utils/contracts";
 import { StakedCollection } from "@/app/types/nft";
 import { ENV } from "@/env";
+import { getFromLocalStorage, setToLocalStorage } from "@/app/utils/localStorage";
 
 interface NftsInCollection {
   image: string;
@@ -33,7 +34,7 @@ interface CollectionNfts {
 
 const page = () => {
   const stakedNfts: CollectionNfts[] = collectionData;
-  const {account, chainId } = useWeb3React();
+  const { account, chainId } = useWeb3React();
   const [stakedCollections, setStakedCollections] = useState<StakedCollection[]>([]);
 
   const getStakedCollections = async () => {
@@ -48,9 +49,17 @@ const page = () => {
     for (let i = 0; i < infoList.length; i++) {
       if (infoList[i].info.amount.toNumber() > 0) {
         const data = await fetchNFTCollectionDetails(infoList[i].address);
-        const ipfsGatewayMetadata = data?.uri.replace('ipfs://', ENV.ipfsGateway)
-        console.log('getStakedCollections ipfsGatewayMetadata', ipfsGatewayMetadata);
-        const {description, image} = await fetch(ipfsGatewayMetadata).then(response => response.json());
+        const storageKey = `ipfsGatewayMetadata_${infoList[i].address}`;
+        let metadata = getFromLocalStorage(storageKey);
+
+        if (!metadata) {
+          const ipfsGatewayMetadata = data?.uri.replace('ipfs://', ENV.ipfsGateway);
+          console.log('getStakedCollections ipfsGatewayMetadata', ipfsGatewayMetadata);
+          metadata = await fetch(ipfsGatewayMetadata).then(response => response.json());
+          setToLocalStorage(storageKey, metadata);
+        }
+
+        const { description, image } = metadata;
         let _item = {
           description,
           address: infoList[i].address,

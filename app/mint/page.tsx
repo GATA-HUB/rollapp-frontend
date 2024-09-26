@@ -49,14 +49,14 @@ const Page = () => {
       const contractAddress = contracts[index];
       if (from === ethers.constants.AddressZero) {
         console.log(`NFT ${tokenId} transferred from ${from} to ${to} at contract ${contractAddress}`);
-        dispatch({ type: 'SET_MINT_DATA', payload: {
-          liveMints: state.mint.liveMints.map(mint => {
-            if (mint.address === contractAddress) {
-              return { ...mint, minted: mint.minted + 1 };
-            }
-            return mint;
-          })
-        }});
+        // dispatch({ type: 'SET_MINT_DATA', payload: {
+        //   liveMints: state.mint?.liveMints?.map(mint => {
+        //     if (mint.address === contractAddress) {
+        //       return { ...mint, minted: mint.minted + 1 };
+        //     }
+        //     return mint;
+        //   }) || []
+        // }});
       }
     };
 
@@ -83,7 +83,7 @@ const Page = () => {
           {state.loading.mint ? (
             <div>Loading...</div>
           ) : (
-            state.mint?.liveMints.map((nft, i) => (
+            state.mint?.liveMints?.map((nft, i) => (
               <MintCard key={i} nft={nft} />
             ))
           )}

@@ -19,6 +19,7 @@ import { useOwnedNFTCount } from "@/app/hooks/useOwnedNFTCount";
 import Link from "next/link";
 import { useAppContext } from "@/app/context/AppContext";
 import {ENV} from "@/env";
+import {store} from "@/app/store";
 
 const Page = () => {
   const endedIncentiveCollections = collectionData;
@@ -40,7 +41,7 @@ const Page = () => {
       const poolContracts = await getPoolContracts();
       const allPoolsInfo = await getPoolInfoFromAddresses(poolContracts);
       const allCollectionsMetadata = await getAllCollectionsMetadata(poolContracts);
-
+      store.BaseCollections = allCollectionsMetadata;
       const mappedMetadata = await Promise.all(
         allCollectionsMetadata.map(async (collection) => {
           const poolInfo = allPoolsInfo.find(
@@ -57,11 +58,10 @@ const Page = () => {
         })
       );
 
-      const totalReward = mappedMetadata.reduce((total, collection) => total + parseFloat(collection.reward), 0).toFixed(2);
-
       dispatch({ type: 'SET_DASHBOARD_DATA', payload: {
         activeIncentivizedCollections: mappedMetadata,
-        totalReward: totalReward,
+        totalReward: state.dashboard?.totalReward || 0,
+        totalBalance: totalNFTBalance,
       }});
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -70,10 +70,10 @@ const Page = () => {
         dispatch({ type: 'SET_LOADING', payload: { key: 'dashboard', value: false } });
       }
     }
-  }, [dispatch]);
+  }, [dispatch, state.dashboard?.totalReward, totalNFTBalance]);
 
   useEffect(() => {
-    if (!state.dashboard) {
+    if (!state.dashboard?.activeIncentivizedCollections.length) {
       fetchDashboardData();
     }
 
@@ -218,7 +218,7 @@ const Page = () => {
             <div className="grid grid-cols-1 col-span-1 w-full gap-4">
               <div className="flex flex-col gap-1 z-10">
                 <h5>NFTs</h5>
-                <h1>{totalNFTBalance}</h1>
+                <h1>{state.dashboard?.totalBalance || 0}</h1>
               </div>
             </div>
           </div>

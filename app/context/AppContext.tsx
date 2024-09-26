@@ -3,7 +3,8 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 interface DashboardState {
   activeIncentivizedCollections: any[];
-  totalReward: string;
+  totalReward: number;
+  totalBalance: number;
 }
 
 interface AppState {
@@ -24,10 +25,15 @@ type Action =
   | { type: 'SET_MINT_DATA'; payload: any }
   | { type: 'SET_STAKED_DATA'; payload: any }
   | { type: 'SET_ASSETS_DATA'; payload: any }
-  | { type: 'SET_LOADING'; payload: { key: keyof AppState['loading']; value: boolean } };
+  | { type: 'SET_LOADING'; payload: { key: keyof AppState['loading']; value: boolean } }
+  | { type: 'SET_TOTAL_REWARD'; payload: number };
 
 const initialState: AppState = {
-  dashboard: null,
+  dashboard: {
+    activeIncentivizedCollections: [],
+    totalReward: 0,
+    totalBalance: 0,
+  },
   mint: null,
   staked: null,
   assets: null,
@@ -49,6 +55,8 @@ function appReducer(state: AppState, action: Action): AppState {
     case 'SET_DASHBOARD_DATA':
       return { ...state, dashboard: action.payload };
     case 'SET_MINT_DATA':
+      console.log('Setting mint data');
+      console.log(action.payload);
       return { ...state, mint: action.payload };
     case 'SET_STAKED_DATA':
       return { ...state, staked: action.payload };
@@ -58,6 +66,14 @@ function appReducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         loading: { ...state.loading, [action.payload.key]: action.payload.value },
+      };
+    case 'SET_TOTAL_REWARD':
+      return {
+        ...state,
+        dashboard: {
+          ...state.dashboard!,
+          totalReward: action.payload,
+        },
       };
     default:
       return state;

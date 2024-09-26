@@ -3,18 +3,29 @@ import {useWeb3React} from "@web3-react/core";
 import {checkActiveTime} from "@/app/utils";
 import {liveRewards} from "@/app/utils/contracts";
 import {ethers} from "ethers";
-import {store} from "@/app/store";
+import {useAppContext} from "@/app/context/AppContext";
+
+interface RewardItem {
+  stakeAddress: string;
+  reward1: number;
+  reward2: number;
+  claimable: boolean;
+  claimnap: number;
+  poolIndex: number;
+}
 
 export function useRewardTracking() {
-  const [listReward, setListReward] = useState([]);
-  const [totalReward, setTotalReward] = useState(0);
+  const [listReward, setListReward] = useState<RewardItem[]>([]);
   const { account, chainId, library } = useWeb3React();
+  const { dispatch } = useAppContext();
+
   const getRewardRealTime = useCallback(
-    async (_dataList, _dataFlag) => {
+    async (_dataList: any[] = [], _dataFlag: boolean = false) => {
       if (!account || !chainId || !library) return;
       let dataList = _dataList;
+      // TODO hardcoded
       if (!_dataFlag) dataList = [{address: '0x9B28891A70ee297Bb2EAa8d6e3b7cC55eaA6dc24', poolIndex: 0}, {address: '0x644439090d56986f3da56c42b7bc864cfa668ce9', poolIndex: 0}, ];
-      let _newList = [];
+      let _newList: RewardItem[] = [];
       for (let i = 0; i < dataList.length; i++) {
         let m_reward1 = 0;
         let m_reward2 = 0;
@@ -32,15 +43,15 @@ export function useRewardTracking() {
             library.getSigner()
           );
           if (_rewards == null) continue;
-          m_reward1 = ethers.utils.formatUnits(
+          m_reward1 = Number(ethers.utils.formatUnits(
             _rewards[0],
             token1Info?.decimals
-          );
+          ));
           if (token2Info) {
-            m_reward2 = ethers.utils.formatUnits(
+            m_reward2 = Number(ethers.utils.formatUnits(
               _rewards[1],
               token2Info?.decimals
-            );
+            ));
           }
         }
         _newList.push({
@@ -56,6 +67,7 @@ export function useRewardTracking() {
     },
     [account, chainId, library]
   );
+
   let timerInterval: string | number | NodeJS.Timeout | undefined;
   useEffect(() => {
     getRewardRealTime();
@@ -71,12 +83,12 @@ export function useRewardTracking() {
     for (let i = 0; i < listReward.length; i++) {
       let rewardTemp = listReward[i].reward1;
       let rewardTemp2 = listReward[i].reward2;
-      tReward += Number(rewardTemp);
-      tReward += Number(rewardTemp2);
+      tReward += rewardTemp;
+      tReward += rewardTemp2;
     }
     console.log("total reward", tReward);
-    setTotalReward(tReward);
-    store.totalReward = tReward;
-  }, [listReward]);
-  return { listReward, totalReward };
+    dispatch({ type: 'SET_TOTAL_REWARD', payload: tReward });
+  }, [listReward, dispatch]);
+
+  return { listReward };
 }

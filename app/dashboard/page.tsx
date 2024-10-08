@@ -21,7 +21,7 @@ import { useAppContext } from "@/app/context/AppContext";
 import { ENV } from "@/env";
 import { store } from "@/app/store";
 import CardLoader from "../components/loaders/CardLoader";
-import ConnectWallet from "../components/emptyState/connectWallet";
+import ConnectWallet from "../components/emptyState/page";
 
 const Page = () => {
   const endedIncentiveCollections = collectionData;

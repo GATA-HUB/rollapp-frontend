@@ -15,7 +15,7 @@ import { claimRewards } from "@/app/utils/contracts";
 import { useAppContext } from "@/app/context/AppContext";
 import { motion } from "framer-motion";
 import LargeCardLoader from "../components/loaders/LargeCardLoader";
-import ConnectWallet from "../components/emptyState/connectWallet";
+import ConnectWallet from "../components/emptyState/page";
 
 interface Token {
   image: string;

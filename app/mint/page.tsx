@@ -13,7 +13,7 @@ import { ENV } from "@/env";
 import { BaseCollection } from "@/app/types/nft";
 import { useAppContext } from "@/app/context/AppContext";
 import CardLoader from "../components/loaders/CardLoader";
-import ConnectWallet from "../components/emptyState/connectWallet";
+import ConnectWallet from "../components/emptyState/page";
 
 const Page = () => {
   const initialMintNfts: BaseCollection[] = mintData;

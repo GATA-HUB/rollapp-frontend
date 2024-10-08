@@ -15,7 +15,7 @@ interface Props {
   title: string;
 }
 
-const ConnectWallet = ({ title }: Props) => {
+const page = ({ title }: Props) => {
   const { account, activate } = useWeb3React();
   const [errorModalOpen, setErrorModalOpen] = useState<boolean | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
@@ -97,4 +97,4 @@ const ConnectWallet = ({ title }: Props) => {
   );
 };
 
-export default ConnectWallet;
+export default page;

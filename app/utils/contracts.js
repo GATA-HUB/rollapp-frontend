@@ -354,6 +354,7 @@ export async function getUserTokenIds(user_address, collection, poolIndex, chain
 }
 
 export async function liveRewards(_user, stakeToken, poolIndex, chainId, provider) {
+    console.log("liveRewards: ", _user, stakeToken, poolIndex, chainId);
     const stakeContract = getContractObj("TycheStake", chainId, provider);
     try {
         const tx = await stakeContract.checkRewards(_user, stakeToken, poolIndex);

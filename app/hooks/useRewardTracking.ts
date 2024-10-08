@@ -17,28 +17,29 @@ interface RewardItem {
 export function useRewardTracking() {
   const [listReward, setListReward] = useState<RewardItem[]>([]);
   const { account, chainId, library } = useWeb3React();
-  const { dispatch } = useAppContext();
+  const { state, dispatch } = useAppContext();
 
   const getRewardRealTime = useCallback(
-    async (_dataList: any[] = [], _dataFlag: boolean = false) => {
+    async () => {
       if (!account || !chainId || !library) return;
-      let dataList = _dataList;
-      // TODO hardcoded
-      if (!_dataFlag) dataList = [{address: '0x9B28891A70ee297Bb2EAa8d6e3b7cC55eaA6dc24', poolIndex: 0}, {address: '0x644439090d56986f3da56c42b7bc864cfa668ce9', poolIndex: 0}, ];
+      
+      const activeIncentivizedCollections = state.dashboard?.activeIncentivizedCollections || [];
+      
       let _newList: RewardItem[] = [];
-      for (let i = 0; i < dataList.length; i++) {
+      for (let i = 0; i < activeIncentivizedCollections.length; i++) {
+        const collection = activeIncentivizedCollections[i];
         let m_reward1 = 0;
         let m_reward2 = 0;
         let claimable = false;
-        let delayTime = checkActiveTime(dataList[i].address, dataList[i].poolIndex, account);
+        let delayTime = checkActiveTime(collection.address, collection.poolIndex, account);
         if (delayTime < 0) {
           claimable = true;
-          const token1Info = dataList[i].rewardToken1;
-          const token2Info = dataList[i].rewardToken2;
+          const token1Info = collection.rewardToken1;
+          const token2Info = collection.rewardToken2;
           let _rewards = await liveRewards(
             account,
-            dataList[i].address,
-            dataList[i].poolIndex,
+            collection.address,
+            collection.poolIndex,
             chainId,
             library.getSigner()
           );
@@ -55,17 +56,17 @@ export function useRewardTracking() {
           }
         }
         _newList.push({
-          stakeAddress: dataList[i].address,
+          stakeAddress: collection.address,
           reward1: m_reward1,
           reward2: m_reward2,
           claimable: claimable,
           claimnap: delayTime,
-          poolIndex: dataList[i].poolIndex,
+          poolIndex: collection.poolIndex,
         });
       }
       setListReward(_newList);
     },
-    [account, chainId, library]
+    [account, chainId, library, state.dashboard?.activeIncentivizedCollections]
   );
 
   let timerInterval: string | number | NodeJS.Timeout | undefined;

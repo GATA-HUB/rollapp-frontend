@@ -25,6 +25,7 @@ const Collection = () => {
   const [nfts, setNfts] = useState<NftsInCollection[]>([]);
   const { account, library } = useWeb3React();
   const [stakedAt, setStakedAt] = useState<number>(0);
+  const [selectedNfts, setSelectedNfts] = useState<string[]>([]);
 
   if (!collection) {
     return <div>Collection not found</div>;
@@ -38,9 +39,30 @@ const Collection = () => {
     fetchUserNFTs(id, account).then(setNfts)
   }, [stakedAt]);
 
-  const stakeNfts = async (tokenIds: string[]) => {
-    deposit(account, collection.address, 0, tokenIds, REACT_APP_NETWORK_ID, library.getSigner(), account).then(async (tx) => {
-      setStakedAt(Date.now());
+  const toggleNftSelection = (tokenId: string) => {
+    setSelectedNfts(prev => 
+      prev.includes(tokenId) 
+        ? prev.filter(id => id !== tokenId)
+        : [...prev, tokenId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedNfts.length === nfts.length) {
+      setSelectedNfts([]);
+    } else {
+      setSelectedNfts(nfts.map(nft => nft.tokenId));
+    }
+  };
+
+  const stakeNfts = async () => {
+    if (selectedNfts.length === 0) return;
+
+    deposit(account, collection.address, 0, selectedNfts, REACT_APP_NETWORK_ID, library.getSigner(), account).then(async (tx) => {
+      if (tx) {
+        setStakedAt(Date.now());
+        setSelectedNfts([]);
+      }
     });
   }
 
@@ -50,23 +72,36 @@ const Collection = () => {
         <h1>{collection.collection}</h1>
         <p className="text-textGray">{collection.desc}</p>
       </div>
-      <div className="flex">
-        <h2>My NFT</h2>
-        <h2 className="lowercase">s</h2>
+      <div className="flex justify-between items-center">
+        <div className="flex">
+          <h2>My NFT</h2>
+          <h2 className="lowercase">s</h2>
+        </div>
+        <div className="flex gap-4">
+          <SecondaryButton onClick={toggleSelectAll}>
+            {selectedNfts.length === nfts.length ? "Deselect All" : "Select All"}
+          </SecondaryButton>
+          <SecondaryButton onClick={stakeNfts} disabled={selectedNfts.length === 0}>
+            Stake Selected ({selectedNfts.length})
+          </SecondaryButton>
+        </div>
       </div>
       <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
         {nfts.map((nft, index) => {
+          const isSelected = selectedNfts.includes(nft.tokenId);
           return (
             <motion.div
               key={index}
               style={{
-                border: "1px solid rgba(255, 255, 255, 0.1)",
+                border: isSelected ? "1px solid rgba(1, 239, 156, 1)" : "1px solid rgba(255, 255, 255, 0.1)",
+                boxShadow: isSelected ? "8px 8px 0px #01EF9C" : "none",
               }}
               whileHover={{
                 border: "1px solid rgba(1, 239, 156, 1)",
                 boxShadow: "8px 8px 0px #01EF9C",
               }}
-              className="flex flex-col gap-2 p-4 rounded-lg "
+              className="flex flex-col gap-2 p-4 rounded-lg cursor-pointer"
+              onClick={() => toggleNftSelection(nft.tokenId)}
             >
               <div className="w-full aspect-square relative overflow-hidden rounded">
                 <Image
@@ -78,7 +113,6 @@ const Collection = () => {
                 />
               </div>
               <p>{nft.name}</p>
-              <SecondaryButton onClick={() => stakeNfts([nft.tokenId])}>Stake</SecondaryButton>
             </motion.div>
           );
         })}

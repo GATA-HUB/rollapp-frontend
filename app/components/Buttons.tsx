@@ -6,9 +6,10 @@ import React from "react";
 interface Props {
   children: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-export const WalletButton = ({ children, onClick }: Props) => {
+export const WalletButton = ({ children, onClick, disabled }: Props) => {
   return (
     <div
       onClick={onClick}
@@ -43,7 +44,7 @@ export const WalletButton = ({ children, onClick }: Props) => {
   );
 };
 
-export const PrimaryMintButton = ({ children, onClick }: Props) => {
+export const PrimaryMintButton = ({ children, onClick, disabled }: Props) => {
   return (
     <motion.div
       onClick={onClick}
@@ -81,7 +82,7 @@ export const PrimaryMintButton = ({ children, onClick }: Props) => {
   );
 };
 
-export const PrimaryStakeButton = ({ children, onClick }: Props) => {
+export const PrimaryStakeButton = ({ children, onClick, disabled }: Props) => {
   return (
     <motion.div
       onClick={onClick}
@@ -123,7 +124,7 @@ export const PrimaryStakeButton = ({ children, onClick }: Props) => {
   );
 };
 
-export const PrimaryButton = ({ children, onClick }: Props) => {
+export const PrimaryButton = ({ children, onClick, disabled }: Props) => {
   return (
     <motion.div
       onClick={onClick}
@@ -145,7 +146,7 @@ export const PrimaryButton = ({ children, onClick }: Props) => {
   );
 };
 
-export const SecondaryButton = ({ children, onClick }: Props) => {
+export const SecondaryButton = ({ children, onClick, disabled }: Props) => {
   return (
     <div
       onClick={onClick}

@@ -21,7 +21,9 @@ const Collection = () => {
   const params = useParams();
   const { id } = params;
   const { state } = useAppContext();
-  let collection = state.dashboard?.activeIncentivizedCollections.find((c) => c.address === id);
+  let collection = state.dashboard?.activeIncentivizedCollections.find(
+    (c) => c.address === id
+  );
   const [nfts, setNfts] = useState<NftsInCollection[]>([]);
   const { account, library } = useWeb3React();
   const [stakedAt, setStakedAt] = useState<number>(0);
@@ -35,14 +37,22 @@ const Collection = () => {
   }
 
   useEffect(() => {
-    fetchUserNFTs(id, account).then(setNfts)
+    fetchUserNFTs(id, account).then(setNfts);
   }, [stakedAt]);
 
   const stakeNfts = async (tokenIds: string[]) => {
-    deposit(account, collection.address, 0, tokenIds, REACT_APP_NETWORK_ID, library.getSigner(), account).then(async (tx) => {
+    deposit(
+      account,
+      collection.address,
+      0,
+      tokenIds,
+      REACT_APP_NETWORK_ID,
+      library.getSigner(),
+      account
+    ).then(async (tx) => {
       setStakedAt(Date.now());
     });
-  }
+  };
 
   return (
     <div className="page">
@@ -78,7 +88,9 @@ const Collection = () => {
                 />
               </div>
               <p>{nft.name}</p>
-              <SecondaryButton onClick={() => stakeNfts([nft.tokenId])}>Stake</SecondaryButton>
+              <SecondaryButton onClick={() => stakeNfts([nft.tokenId])}>
+                Stake
+              </SecondaryButton>
             </motion.div>
           );
         })}

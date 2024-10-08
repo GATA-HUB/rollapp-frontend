@@ -79,7 +79,7 @@ const Collection = () => {
               />
             </div>
             <p>{nft.name}</p>
-            <SecondaryButton>mint</SecondaryButton>
+            {collection.endingDate && <SecondaryButton>mint</SecondaryButton>}
           </motion.div>
         ))}
       </div>

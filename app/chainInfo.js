@@ -102,8 +102,8 @@ export const chainInfo = {
     REACT_APP_NETWORK_ICON: "https://goerli.basescan.org/images/svg/brands/main.svg?v=23.08.01.1",
     REACT_APP_NETWORK: "Gata",
     REACT_APP_COIN: "agata",
-    REACT_APP_NODE_1: "https://evm.young-elephant-31.telebit.io",
-    REACT_APP_NODES: ["https://evm.young-elephant-31.telebit.io"],
+    REACT_APP_NODE_1: "https://rpc-dym-roller-3dtestnet.gatahub.zone/",
+    REACT_APP_NODES: ["https://rpc-dym-roller-3dtestnet.gatahub.zone/"],
     REACT_APP_SUBGRAPH:
       "https://api.studio.thegraph.com/query/50580/base-selected-contracts-only/1.0.0",
     REACT_APP_BASE_URL: "https://gatahub.zone/",

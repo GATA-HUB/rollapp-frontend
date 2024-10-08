@@ -15,7 +15,7 @@ import { claimRewards } from "@/app/utils/contracts";
 import { useAppContext } from "@/app/context/AppContext";
 import { motion } from "framer-motion";
 import LargeCardLoader from "../components/loaders/LargeCardLoader";
-import ConnectWallet from "../components/emptyState/page";
+import OStateCard from "../components/EmptyState/OState";
 
 interface Token {
   image: string;
@@ -237,7 +237,7 @@ const Page = () => {
               })`}</h2>
             </div>
           </div>
-          {state.assets?.ownedNFTs ? (
+          {account ? (
             <div className="w-full flex flex-col gap-2">
               {state.loading.assets ? (
                 <>
@@ -258,26 +258,38 @@ const Page = () => {
               )}
             </div>
           ) : (
-            <ConnectWallet title={"No NFTs Available!"} />
+            <OStateCard title={"No NFTs Available!"} />
           )}
         </div>
 
         {/* all tokens */}
-        <div className="w-full flex flex-col gap-2">
-          <div className="w-full flex gap-4 items-center justify-between">
-            <div className="flex gap-4">
-              <h2>Tokens</h2>
-              <h2 className="text-textGray">{`(0${tokens.length})`}</h2>
+        {account ? (
+          <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex gap-4 items-center justify-between">
+              <div className="flex gap-4">
+                <h2>Tokens</h2>
+                <h2 className="text-textGray">{`(0${tokens.length})`}</h2>
+              </div>
             </div>
+            {state.loading.assets ? (
+              <>
+                <LargeCardLoader />
+                <LargeCardLoader />
+                <LargeCardLoader />
+                <LargeCardLoader />
+                <LargeCardLoader />
+              </>
+            ) : (
+              <div className="w-full flex flex-col gap-2">
+                {tokens.map((asset, i) => {
+                  return <TokenAssetCard key={i} asset={asset} />;
+                })}
+              </div>
+            )}
           </div>
-
-          <ConnectWallet title={"No Tokens Available!"} />
-          {/* <div className="w-full flex flex-col gap-2">
-            {tokens.map((asset, i) => {
-              return <TokenAssetCard key={i} asset={asset} />;
-            })}
-          </div> */}
-        </div>
+        ) : (
+          <OStateCard title={"No Tokens Available!"} />
+        )}
       </div>
     </div>
   );

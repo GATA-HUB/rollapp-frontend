@@ -1,10 +1,10 @@
 "use client";
 
-import {motion} from "framer-motion";
-import React, {useState} from "react";
+import { motion } from "framer-motion";
+import React, { useState } from "react";
 import Image from "next/image";
 import ExplorePopup from "../Popup/ExplorePopup";
-import {BaseCollection} from "@/app/types/nft";
+import { BaseCollection } from "@/app/types/nft";
 import StakePopup from "@/app/components/Popup/StakePopup";
 
 interface Props {
@@ -45,7 +45,7 @@ const ExploreNftCardDummy = ({ stakedNfts, index }: Props) => {
       <div className="w-full grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1 w-full">
           <h5>ending date</h5>
-          <p>{new Date(stakedNfts.endingDate*1000).toLocaleDateString()}</p>
+          <p>{new Date(stakedNfts.endingDate * 1000).toLocaleDateString()}</p>
         </div>
 
         <div className="flex flex-col gap-1 w-full">
@@ -59,9 +59,9 @@ const ExploreNftCardDummy = ({ stakedNfts, index }: Props) => {
       <div className="flex flex-col gap-1 px-4 py-2 rounded bg-darkGray">
         <h5 className="text-primary">reward</h5>
         <div className="flex gap-1 items-end">
-          <h4>{stakedNfts.reward}</h4>
-          <h4>{stakedNfts.token}</h4>
-          <p>/day</p>
+          <h3>{stakedNfts.reward}</h3>
+          <h3>{stakedNfts.token}</h3>
+          <p className="text-textGray">/day</p>
         </div>
       </div>
       {showPopup && <StakePopup nft={stakedNfts} onClose={handleShwoPopup} />}

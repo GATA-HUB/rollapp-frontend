@@ -13,11 +13,13 @@ import { ENV } from "@/env";
 import { BaseCollection } from "@/app/types/nft";
 import { useAppContext } from "@/app/context/AppContext";
 import CardLoader from "../components/loaders/CardLoader";
-import ConnectWallet from "../components/emptyState/page";
+import OStateCard from "../components/EmptyState/OState";
+import { useWeb3React } from "@web3-react/core";
 
 const Page = () => {
   const initialMintNfts: BaseCollection[] = mintData;
   const contracts = ENV.liveMints;
+  const { account } = useWeb3React();
   const { state, dispatch } = useAppContext();
 
   const fetchMintData = useCallback(
@@ -99,7 +101,7 @@ const Page = () => {
           </div>
         </div>
 
-        {state.mint?.liveMints ? (
+        {account ? (
           <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
             {state.loading.mint ? (
               <>
@@ -117,7 +119,7 @@ const Page = () => {
             )}
           </div>
         ) : (
-          <ConnectWallet title="No Minted Collection Available!" />
+          <OStateCard title="Connect your Wallet & start minting!" />
         )}
       </div>
 

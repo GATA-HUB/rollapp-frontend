@@ -17,7 +17,7 @@ interface Props {
   title: string;
 }
 
-const page = ({ title }: Props) => {
+const OState = ({ title }: Props) => {
   const { account, activate } = useWeb3React();
   const [errorModalOpen, setErrorModalOpen] = useState<boolean | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
@@ -99,4 +99,4 @@ const page = ({ title }: Props) => {
   );
 };
 
-export default page;
+export default OState;

@@ -17,7 +17,9 @@ import {
 } from "@/app/utils/localStorage";
 import { useAppContext } from "@/app/context/AppContext";
 import CardLoader from "../components/loaders/CardLoader";
-import ConnectWallet from "../components/emptyState/page";
+import OStateCard from "../components/EmptyState/OState";
+import Image from "next/image";
+import EmptyState from "../components/EmptyState/EmptyState";
 
 const Page = () => {
   const stakedNfts = collectionData;
@@ -116,25 +118,36 @@ const Page = () => {
           </div>
         </div>
 
-        {state.staked?.stakedCollections ? (
-          <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-            {state.loading.staked ? (
-              <>
-                <CardLoader />
-                <CardLoader />
-                <CardLoader />
-                <CardLoader />
-                <CardLoader />
-                <CardLoader />
-              </>
+        {account ? (
+          <div className="flex w-full">
+            {state.staked?.stakedCollections?.length > 0 ? (
+              <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                {state.loading.staked ? (
+                  <>
+                    <CardLoader />
+                    <CardLoader />
+                    <CardLoader />
+                    <CardLoader />
+                    <CardLoader />
+                    <CardLoader />
+                  </>
+                ) : (
+                  state.staked?.stakedCollections?.map((nft, i) => (
+                    <StakeCollCard key={i} index={i} stakedNfts={nft} />
+                  ))
+                )}
+              </div>
             ) : (
-              state.staked?.stakedCollections?.map((nft, i) => (
-                <StakeCollCard key={i} index={i} stakedNfts={nft} />
-              ))
+              <EmptyState
+                title="You have no NFTs staked."
+                desc="Check our mint page to staked some NFTs and get rewards!"
+                href="/mint"
+                buttonTitle="mint now"
+              />
             )}
           </div>
         ) : (
-          <ConnectWallet title="No Staked Collection Available!" />
+          <OStateCard title="Connect Your Wallet and stake NFTs!" />
         )}
       </div>
     </div>

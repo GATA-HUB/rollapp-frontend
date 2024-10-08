@@ -78,8 +78,8 @@ const MintCard = ({ nft }: Props) => {
         <div className="flex flex-col gap-1 px-4 py-2 rounded bg-darkGray">
           <h5 className="text-primary">mint price</h5>
           <div className="flex gap-1 items-end">
-            <h4>{nft.price}</h4>
-            <h4>{nft.token}</h4>
+            <h3>{nft.price}</h3>
+            <h3>{nft.token}</h3>
           </div>
         </div>
       </motion.div>

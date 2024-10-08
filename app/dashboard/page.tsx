@@ -21,7 +21,7 @@ import { useAppContext } from "@/app/context/AppContext";
 import { ENV } from "@/env";
 import { store } from "@/app/store";
 import CardLoader from "../components/loaders/CardLoader";
-import ConnectWallet from "../components/emptyState/page";
+import OStateCard from "../components/EmptyState/OState";
 
 const Page = () => {
   const endedIncentiveCollections = collectionData;
@@ -286,7 +286,7 @@ const Page = () => {
             )}
           </div>
         ) : (
-          <ConnectWallet title="No Incentivize Collection Available!" />
+          <OStateCard title="Connect your wallet & get Incentivize!" />
         )}
       </div>
 

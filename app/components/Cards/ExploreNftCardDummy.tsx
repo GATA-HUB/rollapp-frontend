@@ -1,10 +1,10 @@
 "use client";
 
-import {motion} from "framer-motion";
-import React, {useState} from "react";
+import { motion } from "framer-motion";
+import React, { useState } from "react";
 import Image from "next/image";
 import ExplorePopup from "../Popup/ExplorePopup";
-import {BaseCollection} from "@/app/types/nft";
+import { BaseCollection } from "@/app/types/nft";
 
 interface Props {
   index: number;
@@ -57,9 +57,9 @@ const ExploreNftCardDummy = ({ stakedNfts, index }: Props) => {
       <div className="flex flex-col gap-1 px-4 py-2 rounded bg-darkGray">
         <h5 className="text-primary">reward</h5>
         <div className="flex gap-1 items-end">
-          <h4>{stakedNfts.reward}</h4>
-          <h4>{stakedNfts.token}</h4>
-          <p>/day</p>
+          <h3>{stakedNfts.reward}</h3>
+          <h3>{stakedNfts.token}</h3>
+          <p className="text-textGray">/day</p>
         </div>
       </div>
       {showPopup && <ExplorePopup nft={stakedNfts} onClose={handleShwoPopup} />}

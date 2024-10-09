@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { SecondaryButton } from "../components/Buttons";
+import { SecondaryButton, WalletButton } from "../components/Buttons";
 import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
 import collectionData from "../../public/collections.json";
 import {
@@ -18,8 +18,10 @@ import { useWeb3React } from "@web3-react/core";
 import { useOwnedNFTCount } from "@/app/hooks/useOwnedNFTCount";
 import Link from "next/link";
 import { useAppContext } from "@/app/context/AppContext";
-import {ENV} from "@/env";
-import {store} from "@/app/store";
+import { ENV } from "@/env";
+import { store } from "@/app/store";
+import CardLoader from "../components/loaders/CardLoader";
+import OStateCard from "../components/EmptyState/OState";
 
 const Page = () => {
   const endedIncentiveCollections = collectionData;
@@ -32,45 +34,59 @@ const Page = () => {
     setShowBalance(!showBalance);
   };
 
-  const fetchDashboardData = useCallback(async (isBackground = false) => {
-    if (!isBackground) {
-      dispatch({ type: 'SET_LOADING', payload: { key: 'dashboard', value: true } });
-    }
-
-    try {
-      const poolContracts = await getPoolContracts();
-      const allPoolsInfo = await getPoolInfoFromAddresses(poolContracts);
-      const allCollectionsMetadata = await getAllCollectionsMetadata(poolContracts);
-      store.BaseCollections = allCollectionsMetadata;
-      const mappedMetadata = await Promise.all(
-        allCollectionsMetadata.map(async (collection) => {
-          const poolInfo = allPoolsInfo.find(
-            (info) => info.address === collection.address
-          );
-          return {
-            ...collection,
-            reward: formatEther(poolInfo?.info?.rewardPerSecond1.mul(86400)),
-            token: (await getERC20Info(poolInfo?.info?.rewardToken1))?.name,
-            endingDate: poolInfo?.info?.endTime.toNumber(),
-            staked: poolInfo?.info?.stakedSupply.toNumber(),
-            poolIndex: poolInfo?.poolIndex,
-          };
-        })
-      );
-
-      dispatch({ type: 'SET_DASHBOARD_DATA', payload: {
-        activeIncentivizedCollections: mappedMetadata,
-        totalReward: state.dashboard?.totalReward || 0,
-        totalBalance: totalNFTBalance,
-      }});
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error);
-    } finally {
+  const fetchDashboardData = useCallback(
+    async (isBackground = false) => {
       if (!isBackground) {
-        dispatch({ type: 'SET_LOADING', payload: { key: 'dashboard', value: false } });
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: true },
+        });
       }
-    }
-  }, [dispatch, state.dashboard?.totalReward, totalNFTBalance]);
+
+      try {
+        const poolContracts = await getPoolContracts();
+        const allPoolsInfo = await getPoolInfoFromAddresses(poolContracts);
+        const allCollectionsMetadata = await getAllCollectionsMetadata(
+          poolContracts
+        );
+        store.BaseCollections = allCollectionsMetadata;
+        const mappedMetadata = await Promise.all(
+          allCollectionsMetadata.map(async (collection) => {
+            const poolInfo = allPoolsInfo.find(
+              (info) => info.address === collection.address
+            );
+            return {
+              ...collection,
+              reward: formatEther(poolInfo?.info?.rewardPerSecond1.mul(86400)),
+              token: (await getERC20Info(poolInfo?.info?.rewardToken1))?.name,
+              endingDate: poolInfo?.info?.endTime.toNumber(),
+              staked: poolInfo?.info?.stakedSupply.toNumber(),
+              poolIndex: poolInfo?.poolIndex,
+            };
+          })
+        );
+
+        dispatch({
+          type: "SET_DASHBOARD_DATA",
+          payload: {
+            activeIncentivizedCollections: mappedMetadata,
+            totalReward: state.dashboard?.totalReward || 0,
+            totalBalance: totalNFTBalance,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        if (!isBackground) {
+          dispatch({
+            type: "SET_LOADING",
+            payload: { key: "dashboard", value: false },
+          });
+        }
+      }
+    },
+    [dispatch, state.dashboard?.totalReward, totalNFTBalance]
+  );
 
   useEffect(() => {
     if (!state.dashboard?.activeIncentivizedCollections.length) {
@@ -79,7 +95,7 @@ const Page = () => {
 
     // Set up interval for background fetching
     const intervalId = setInterval(() => {
-      console.log('Fetching data in background');
+      console.log("Fetching data in background");
       fetchDashboardData(true);
     }, ENV.globalBackgroundRefreshInterval); // Fetch every minute
 
@@ -87,18 +103,20 @@ const Page = () => {
   }, [fetchDashboardData]);
 
   const handleClaim = async () => {
-    state.dashboard?.activeIncentivizedCollections?.forEach(async (collection) => {
-      claimRewards(
-        collection.address,
-        collection.poolIndex,
-        chainId,
-        library.getSigner(),
-        account
-      ).then(async (tx) => {
-        // Handle successful claim
-        fetchDashboardData(true);
-      });
-    });
+    state.dashboard?.activeIncentivizedCollections?.forEach(
+      async (collection) => {
+        claimRewards(
+          collection.address,
+          collection.poolIndex,
+          chainId,
+          library.getSigner(),
+          account
+        ).then(async (tx) => {
+          // Handle successful claim
+          fetchDashboardData(true);
+        });
+      }
+    );
   };
 
   return (
@@ -156,8 +174,8 @@ const Page = () => {
         <div className="flex flex-col gap-2 col-span-3">
           <h2 className="text-white">Assets</h2>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-1 w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden cursor-pointer">
+          <div className="grid grid-cols-4 gap-4">
+            <div className="col-span-1 w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
               <div className="flex flex-col gap-1 z-10">
                 <h5>total USD</h5>
                 <div className="flex gap-4 items-center">
@@ -216,22 +234,21 @@ const Page = () => {
             </div>
 
             <div className="grid grid-cols-1 col-span-1 w-full gap-4">
-              <div className="flex flex-col gap-1 z-10">
+              <div className="flex flex-col gap-1 z-10 p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
                 <h5>NFTs</h5>
                 <h1>{state.dashboard?.totalBalance || 0}</h1>
               </div>
             </div>
-          </div>
-
-          {/* Rewards */}
-          <div className="flex flex-col gap-2 col-span-1">
-            <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
-              <div className="flex flex-col gap-1 z-10">
-                <h5>Rewards</h5>
-                <h1>{state.dashboard?.totalReward || '0'}</h1>
-              </div>
-              <div className="flex gap-2">
-                <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
+            {/* Rewards */}
+            <div className="flex flex-col gap-2 col-span-2">
+              <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
+                <div className="flex flex-col gap-1 z-10">
+                  <h5>Rewards</h5>
+                  <h1>{state.dashboard?.totalReward || "0"}</h1>
+                </div>
+                <div className="flex gap-2">
+                  <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
+                </div>
               </div>
             </div>
           </div>
@@ -244,20 +261,33 @@ const Page = () => {
         <div className="w-full flex gap-4 items-center justify-between">
           <div className="flex gap-4">
             <h2>Incentives</h2>
-            <h2 className="text-textGray">{`(0${state.dashboard?.activeIncentivizedCollections?.length || 0})`}</h2>
+            <h2 className="text-textGray">{`(0${
+              state.dashboard?.activeIncentivizedCollections?.length || 0
+            })`}</h2>
           </div>
           {/*<SecondaryButton>view all</SecondaryButton>*/}
         </div>
 
-        <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {state.loading.dashboard ? (
-            <div>Loading...</div>
-          ) : (
-            state.dashboard?.activeIncentivizedCollections?.map((nft, i) => (
-              <ExploreNftCard key={i} index={i} stakedNfts={nft} />
-            ))
-          )}
-        </div>
+        {account ? (
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+            {state.loading.dashboard ? (
+              <>
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+              </>
+            ) : (
+              state.dashboard?.activeIncentivizedCollections?.map((nft, i) => (
+                <ExploreNftCard key={i} index={i} stakedNfts={nft} />
+              ))
+            )}
+          </div>
+        ) : (
+          <OStateCard title="Connect your wallet & get Incentivize!" />
+        )}
       </div>
 
       {/* my minted NFT's */}
@@ -271,7 +301,7 @@ const Page = () => {
           {/*<SecondaryButton>view all</SecondaryButton>*/}
         </div>
 
-        <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {endedIncentiveCollections.map((nft, i) => (
             <ExploreNftCardDummy key={i} index={i} stakedNfts={nft} />
           ))}

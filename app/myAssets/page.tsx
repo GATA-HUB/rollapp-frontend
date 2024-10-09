@@ -13,6 +13,9 @@ import { BaseCollection } from "@/app/types/nft";
 import { useWeb3React } from "@web3-react/core";
 import { claimRewards } from "@/app/utils/contracts";
 import { useAppContext } from "@/app/context/AppContext";
+import { motion } from "framer-motion";
+import LargeCardLoader from "../components/loaders/LargeCardLoader";
+import OStateCard from "../components/EmptyState/OState";
 
 interface Token {
   image: string;
@@ -37,45 +40,54 @@ const Page = () => {
   const { account, chainId, library } = useWeb3React();
   const { state, dispatch } = useAppContext();
 
-  const fetchAssetsData = useCallback(async (isBackground = false) => {
-    if (!account) return;
+  const fetchAssetsData = useCallback(
+    async (isBackground = false) => {
+      if (!account) return;
 
-    if (!isBackground) {
-      dispatch({ type: 'SET_LOADING', payload: { key: 'assets', value: true } });
-    }
-
-    try {
-      const available = [];
-      let total = 0;
-      const availableNFTs = new Map<string, number>();
-
-      for (let i = 0; i < contracts.length; i++) {
-        const balance = await balanceOfUser(account, contracts[i]);
-        if (balance > 0) {
-          available.push(contracts[i]);
-          total += balance;
-        }
-        availableNFTs.set(contracts[i], balance);
-      }
-
-      const ownedNFTs = await getAllCollectionsMetadata(available);
-
-      dispatch({
-        type: 'SET_ASSETS_DATA',
-        payload: {
-          ownedNFTs,
-          availableNFTs: Object.fromEntries(availableNFTs),
-          totalBalance: total
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching assets data:", error);
-    } finally {
       if (!isBackground) {
-        dispatch({ type: 'SET_LOADING', payload: { key: 'assets', value: false } });
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "assets", value: true },
+        });
       }
-    }
-  }, [account, contracts, dispatch]);
+
+      try {
+        const available = [];
+        let total = 0;
+        const availableNFTs = new Map<string, number>();
+
+        for (let i = 0; i < contracts.length; i++) {
+          const balance = await balanceOfUser(account, contracts[i]);
+          if (balance > 0) {
+            available.push(contracts[i]);
+            total += balance;
+          }
+          availableNFTs.set(contracts[i], balance);
+        }
+
+        const ownedNFTs = await getAllCollectionsMetadata(available);
+
+        dispatch({
+          type: "SET_ASSETS_DATA",
+          payload: {
+            ownedNFTs,
+            availableNFTs: Object.fromEntries(availableNFTs),
+            totalBalance: total,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching assets data:", error);
+      } finally {
+        if (!isBackground) {
+          dispatch({
+            type: "SET_LOADING",
+            payload: { key: "assets", value: false },
+          });
+        }
+      }
+    },
+    [account, contracts, dispatch]
+  );
 
   useEffect(() => {
     if (!state.assets) {
@@ -94,18 +106,20 @@ const Page = () => {
   }, [fetchAssetsData]);
 
   const handleClaim = async () => {
-    state.dashboard?.activeIncentivizedCollections?.forEach(async (collection) => {
-      claimRewards(
-        collection.address,
-        collection.poolIndex,
-        chainId,
-        library.getSigner(),
-        account
-      ).then(async (tx) => {
-        // Handle successful claim
-        fetchAssetsData(true);
-      });
-    });
+    state.dashboard?.activeIncentivizedCollections?.forEach(
+      async (collection) => {
+        claimRewards(
+          collection.address,
+          collection.poolIndex,
+          chainId,
+          library.getSigner(),
+          account
+        ).then(async (tx) => {
+          // Handle successful claim
+          fetchAssetsData(true);
+        });
+      }
+    );
   };
 
   return (
@@ -201,7 +215,7 @@ const Page = () => {
           <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10 overflow-hidden">
             <div className="flex flex-col gap-1 z-10">
               <h5>Rewards</h5>
-              <h1>{state.dashboard?.totalReward || '0'}</h1>
+              <h1>{state.dashboard?.totalReward || "0"}</h1>
             </div>
             <div className="flex gap-2">
               <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>
@@ -215,27 +229,37 @@ const Page = () => {
         <div className="w-full flex flex-col gap-2">
           <div className="w-full flex gap-4 items-center justify-between">
             <div className="flex gap-4">
-              <div className="flex">
-                <h2>NFT</h2>
-                <h2 className="lowercase">s</h2>
-              </div>
-              <h2 className="text-textGray">{`(0${state.assets?.ownedNFTs?.length || 0})`}</h2>
+              <h2>
+                NFT<span className="lowercase">s</span>
+              </h2>
+              <h2 className="text-textGray">{`(0${
+                state.assets?.ownedNFTs?.length || 0
+              })`}</h2>
             </div>
           </div>
-
-          <div className="w-full flex flex-col gap-2">
-            {state.loading.assets ? (
-              <div>Loading...</div>
-            ) : (
-              state.assets?.ownedNFTs?.map((nft, i) => (
-                <NFTAssetCard
-                  key={i}
-                  asset={nft}
-                  amount={state.assets?.availableNFTs[nft.address] || 0}
-                />
-              ))
-            )}
-          </div>
+          {account ? (
+            <div className="w-full flex flex-col gap-2">
+              {state.loading.assets ? (
+                <>
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                </>
+              ) : (
+                state.assets?.ownedNFTs?.map((nft, i) => (
+                  <NFTAssetCard
+                    key={i}
+                    asset={nft}
+                    amount={state.assets?.availableNFTs[nft.address] || 0}
+                  />
+                ))
+              )}
+            </div>
+          ) : (
+            <OStateCard title={"No NFTs Available!"} />
+          )}
         </div>
 
         {/* all tokens */}
@@ -246,12 +270,27 @@ const Page = () => {
               <h2 className="text-textGray">{`(0${tokens.length})`}</h2>
             </div>
           </div>
-
-          <div className="w-full flex flex-col gap-2">
-            {tokens.map((asset, i) => {
-              return <TokenAssetCard key={i} asset={asset} />;
-            })}
-          </div>
+          {account ? (
+            <div className="w-full flex flex-col gap-2">
+              {state.loading.assets ? (
+                <>
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                </>
+              ) : (
+                <div className="w-full flex flex-col gap-2">
+                  {tokens.map((asset, i) => {
+                    return <TokenAssetCard key={i} asset={asset} />;
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            <OStateCard title={"No Tokens Available!"} />
+          )}
         </div>
       </div>
     </div>

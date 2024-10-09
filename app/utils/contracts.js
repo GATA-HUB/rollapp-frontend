@@ -410,7 +410,13 @@ export async function fetchUserNFTs(collectionAddress, userAddress) {
 
         for (let i = 0; i < balance; i++) {
             const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i);
-            ownedNFTs.push({collection: collectionAddress, name: `${collectionMetadata.collection} #${tokenId.toString()}`, tokenId: tokenId.toString(), image: collectionMetadata.image, owner: userAddress});
+            ownedNFTs.push({collection: collectionAddress, name: `${collectionMetadata.collection} #${tokenId.toString()}`, tokenId: tokenId.toString(), image: collectionMetadata.image, owner: userAddress, balance: Number(balance)});
         }
         return ownedNFTs;
+}
+
+export async function fetchTokenBalance(collectionAddress, userAddress) {
+    const nftContract = new ethers.Contract(collectionAddress, abi, defaultProvider);
+    const balance = await nftContract.balanceOf(userAddress);
+    return balance.toString();
 }

@@ -263,33 +263,35 @@ const Page = () => {
         </div>
 
         {/* all tokens */}
-        {account ? (
-          <div className="w-full flex flex-col gap-2">
-            <div className="w-full flex gap-4 items-center justify-between">
-              <div className="flex gap-4">
-                <h2>Tokens</h2>
-                <h2 className="text-textGray">{`(0${tokens.length})`}</h2>
-              </div>
+        <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex gap-4 items-center justify-between">
+            <div className="flex gap-4">
+              <h2>Tokens</h2>
+              <h2 className="text-textGray">{`(0${tokens.length})`}</h2>
             </div>
-            {state.loading.assets ? (
-              <>
-                <LargeCardLoader />
-                <LargeCardLoader />
-                <LargeCardLoader />
-                <LargeCardLoader />
-                <LargeCardLoader />
-              </>
-            ) : (
-              <div className="w-full flex flex-col gap-2">
-                {tokens.map((asset, i) => {
-                  return <TokenAssetCard key={i} asset={asset} />;
-                })}
-              </div>
-            )}
           </div>
-        ) : (
-          <OStateCard title={"No Tokens Available!"} />
-        )}
+          {account ? (
+            <div className="w-full flex flex-col gap-2">
+              {state.loading.assets ? (
+                <>
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                  <LargeCardLoader />
+                </>
+              ) : (
+                <div className="w-full flex flex-col gap-2">
+                  {tokens.map((asset, i) => {
+                    return <TokenAssetCard key={i} asset={asset} />;
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            <OStateCard title={"No Tokens Available!"} />
+          )}
+        </div>
       </div>
     </div>
   );

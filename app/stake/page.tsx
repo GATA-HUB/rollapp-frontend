@@ -120,30 +120,32 @@ const Page = () => {
 
         {account ? (
           <div className="flex w-full">
-            {state.staked?.stakedCollections?.length > 0 ? (
+            {state.loading.staked ? (
               <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-                {state.loading.staked ? (
-                  <>
-                    <CardLoader />
-                    <CardLoader />
-                    <CardLoader />
-                    <CardLoader />
-                    <CardLoader />
-                    <CardLoader />
-                  </>
-                ) : (
-                  state.staked?.stakedCollections?.map((nft, i) => (
-                    <StakeCollCard key={i} index={i} stakedNfts={nft} />
-                  ))
-                )}
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
               </div>
             ) : (
-              <EmptyState
-                title="You have no NFTs staked."
-                desc="Check our mint page to staked some NFTs and get rewards!"
-                href="/mint"
-                buttonTitle="mint now"
-              />
+              <>
+                {state.staked?.stakedCollections?.length ? (
+                  <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                    {state.staked?.stakedCollections?.map((nft, i) => (
+                      <StakeCollCard key={i} index={i} stakedNfts={nft} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    title="You have no NFTs staked."
+                    desc="Check our mint page to staked some NFTs and get rewards!"
+                    href="/mint"
+                    buttonTitle="mint now"
+                  />
+                )}
+              </>
             )}
           </div>
         ) : (

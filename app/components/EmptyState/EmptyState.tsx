@@ -29,9 +29,11 @@ const EmptyState = ({ title, desc, href, buttonTitle }: Props) => {
         </div>
         <h4>{title}</h4>
         <p className="text-textGray">{desc}</p>
-        <Link href={`${href}`}>
-          <PrimaryButton>{buttonTitle}</PrimaryButton>
-        </Link>
+        {href && buttonTitle && (
+          <Link href={`${href}`}>
+            <PrimaryButton>{buttonTitle}</PrimaryButton>
+          </Link>
+        )}
       </div>
     </div>
   );

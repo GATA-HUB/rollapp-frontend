@@ -147,16 +147,30 @@ export const PrimaryButton = ({ children, onClick, disabled }: Props) => {
 };
 
 export const SecondaryButton = ({ children, onClick, disabled }: Props) => {
-  return (
-    <div
-      onClick={onClick}
-      className={`group flex items-center justify-center px-4 py-2 rounded-lg gap-2 bg-darkGray bg-opacity-100 hover:bg-primary hover:bg-opacity-10 cursor-pointer transition-all duration-300 ease-in-out`}
-    >
-      <span
-        className={`buttonText text-white group-hover:text-primary transition-all duration-300 ease-in-out`}
+  if (disabled) {
+    return (
+      <div
+        className={`group flex items-center justify-center px-4 py-2 rounded-lg gap-2 bg-black transition-all duration-300 ease-in-out`}
       >
-        {children}
-      </span>
-    </div>
-  );
+        <span
+          className={`buttonText text-textGray transition-all duration-300 ease-in-out`}
+        >
+          {children}
+        </span>
+      </div>
+    );
+  } else {
+    return (
+      <div
+        onClick={onClick}
+        className={`group flex items-center justify-center px-4 py-2 rounded-lg gap-2 bg-darkGray bg-opacity-100 hover:bg-primary hover:bg-opacity-10 cursor-pointer transition-all duration-300 ease-in-out`}
+      >
+        <span
+          className={`buttonText text-white group-hover:text-primary transition-all duration-300 ease-in-out`}
+        >
+          {children}
+        </span>
+      </div>
+    );
+  }
 };

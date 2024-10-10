@@ -165,7 +165,7 @@ const MintPopup = ({ nft, onClose }: Props) => {
 
             <div className="flex flex-col gap-1 w-32">
               <div className="flex gap2">
-                <p>{nft.price * tokenQuantity}</p>
+                <p>{(nft.price * tokenQuantity).toFixed(2)}</p>
                 <p>{nft.token}</p>
               </div>
               <h5>{`Max ${maxToken} tokens`}</h5>

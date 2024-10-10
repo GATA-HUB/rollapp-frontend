@@ -244,7 +244,7 @@ const Page = () => {
               <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10">
                 <div className="flex flex-col gap-1 z-10">
                   <h5>Rewards</h5>
-                  <h1>{state.dashboard?.totalReward || "0"}</h1>
+                  <h1>{state.dashboard?.totalReward.toFixed(2) || "0"}</h1>
                 </div>
                 <div className="flex gap-2">
                   <SecondaryButton onClick={handleClaim}>claim</SecondaryButton>

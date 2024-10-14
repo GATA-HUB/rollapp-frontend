@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { Jost } from "next/font/google";
+import type {Metadata} from "next";
+import {Jost} from "next/font/google";
 import "./globals.css";
 import NavBar from "@/app/components/NavBar/layout";
 import {Providers} from "@/app/providers";
 import {RewardTracker} from "@/app/components/RewardTracker";
 import {OwnedNFTTracker} from "@/app/components/OwnedNFTTracker";
-import { AppProvider } from "@/app/context/AppContext";
+import {AppWrapper} from '@/app/context/AppContext';
 
 const jost = Jost({
   subsets: ["latin"],
@@ -24,22 +24,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body
         className={`w-full bg-black flex flex-col p-8 items-center ${jost.className}`}
       >
-      <Providers>
-        <AppProvider>
-          <RewardTracker />
-          <OwnedNFTTracker />
-          <NavBar />
-          <div className="w-full max-w-[1440px] flex flex-col items-center">
-            {children}
-          </div>
-        </AppProvider>
-      </Providers>
+        <AppWrapper>
+          <Providers>
+            <RewardTracker />
+            <OwnedNFTTracker />
+            <NavBar />
+            <div className="w-full max-w-[1440px] flex flex-col items-center">
+              {children}
+            </div>
+          </Providers>
+        </AppWrapper>
       </body>
     </html>
   );

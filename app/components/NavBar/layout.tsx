@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import NavButton from "@/app/components/NavBar/NavButton";
-import { WalletButton } from "../Buttons";
+import {WalletButton} from "../Buttons";
 import Link from "next/link";
 import {AbstractConnector} from "@web3-react/abstract-connector";
 import {UnsupportedChainIdError, useWeb3React} from "@web3-react/core";
@@ -11,18 +11,25 @@ import {setupNetwork} from "@/app/utils/wallet";
 import {getErrorMessage} from "@/app/utils/ethereum";
 import {useInactiveListener} from "@/app/hooks/useInactiveListener";
 
-const page = () => {
+const Page = () => {
   const [errorModalOpen, setErrorModalOpen] = useState<boolean | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
   const [activatingConnector, setActivatingConnector] = useState<AbstractConnector | undefined>();
 
-  const { account, library, activate, active, connector } = useWeb3React();
+  const { account, activate, active, connector, deactivate } = useWeb3React();
 
   const connectAccount = () => {
-    if(typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       window.localStorage.setItem(connectorLocalStorageKey, connectors[0].key);
       connectToProvider(connectors[0].connectorId);
     }
+  };
+
+  const disconnectAccount = () => {
+    if (deactivate) {
+      deactivate();
+    }
+    window.localStorage.removeItem(connectorLocalStorageKey);
   };
 
   console.log("account", account);
@@ -84,6 +91,11 @@ const page = () => {
       setErrorModalOpen(true);
     }
   }, [activateError, errorModalOpen]);
+
+  const shortenAddress = (address: string) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+
   return (
     <nav className="z-40 fixed top-0 w-full flex px-8 py-4 bg-black bg-opacity-60 backdrop-blur-sm border-b-[1px] border-white border-opacity-10 items-center justify-center">
       <div className="w-full max-w-[1856px] flex items-center justify-between">
@@ -110,12 +122,17 @@ const page = () => {
           </NavButton>
         </div>
 
-        <WalletButton onClick={connectAccount}>
-          {account ? `${account.substring(0, 3)}...${account.substring(0, 3)}`: 'Connect Wallet'}
-        </WalletButton>
+        {account ? (
+          <div className="flex items-center gap-2">
+            <span className="text-white">{shortenAddress(account)}</span>
+            <WalletButton onClick={disconnectAccount}>Disconnect</WalletButton>
+          </div>
+        ) : (
+          <WalletButton onClick={connectAccount}>Connect Wallet</WalletButton>
+        )}
       </div>
     </nav>
   );
 };
 
-export default page;
+export default Page;

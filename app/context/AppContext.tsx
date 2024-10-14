@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, {createContext, ReactNode, useContext, useEffect, useReducer} from 'react';
+import {fetchDashboardData} from '../utils/contracts';
 
 interface DashboardState {
   activeIncentivizedCollections: any[];
@@ -80,20 +81,49 @@ function appReducer(state: AppState, action: Action): AppState {
   }
 }
 
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export function AppWrapper({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: true },
+        });
+        const dashboardData = await fetchDashboardData();
+        dispatch({
+          type: "SET_DASHBOARD_DATA",
+          payload: dashboardData,
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: false },
+        });
+      }
+    };
+
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 60000); // Fetch every minute
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}
     </AppContext.Provider>
   );
-};
+}
 
-export const useAppContext = () => {
+export function useAppContext() {
   const context = useContext(AppContext);
   if (context === undefined) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
   return context;
-};
+}

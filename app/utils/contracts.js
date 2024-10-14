@@ -1,9 +1,10 @@
-import { BigNumber, ethers } from "ethers";
-import { getTokenContract, getCollectionContract, getContractObj, ZERO_ADDRESS } from ".";
+import {BigNumber, ethers} from "ethers";
+import {getCollectionContract, getContractObj, getTokenContract, ZERO_ADDRESS} from ".";
 import {chainInfo, REACT_APP_NETWORK_ID} from "../chainInfo";
-import {ENV} from "@/env";
 import {store} from "@/app/store";
-import { getFromLocalStorage, setToLocalStorage } from "@/app/utils/localStorage";
+import {getFromLocalStorage, setToLocalStorage} from "@/app/utils/localStorage";
+import {getAllCollectionsMetadata} from "@/app/utils/mintcontracts";
+import {formatEther} from "ethers/lib/utils";
 
 export const tokenDecimal = 6;
 export const defaultProvider = new ethers.providers.JsonRpcProvider(chainInfo[REACT_APP_NETWORK_ID].REACT_APP_NODE_1);
@@ -401,22 +402,70 @@ export async function fetchNFTCollectionDetails(address) {
 }
 
 export async function fetchUserNFTs(collectionAddress, userAddress) {
+    try {
+        const collectionMetadata = store.BaseCollections.find(c => c.address.toLowerCase() === collectionAddress.toLowerCase());
+
+        if (!collectionMetadata) {
+            console.warn(`Metadata not found for collection: ${collectionAddress}`);
+            return [];
+        }
+
         const nftContract = new ethers.Contract(collectionAddress, abi, defaultProvider);
         const balance = await nftContract.balanceOf(userAddress);
-        console.log(`User owns ${balance.toString()} NFTs`);
-        const collectionMetadata = store.BaseCollections.find(collection => collection.address === collectionAddress);
-
         const ownedNFTs = [];
 
         for (let i = 0; i < balance; i++) {
             const tokenId = await nftContract.tokenOfOwnerByIndex(userAddress, i);
-            ownedNFTs.push({collection: collectionAddress, name: `${collectionMetadata.collection} #${tokenId.toString()}`, tokenId: tokenId.toString(), image: collectionMetadata.image, owner: userAddress, balance: Number(balance)});
+            ownedNFTs.push({
+                collection: collectionAddress,
+                name: `${collectionMetadata.collection || 'Unknown Collection'} #${tokenId.toString()}`,
+                tokenId: tokenId.toString(),
+                image: collectionMetadata.image || '',
+                owner: userAddress,
+                balance: Number(balance)
+            });
         }
         return ownedNFTs;
+    } catch (error) {
+        console.error("Error fetching user NFTs:", error);
+        return [];
+    }
 }
 
 export async function fetchTokenBalance(collectionAddress, userAddress) {
     const nftContract = new ethers.Contract(collectionAddress, abi, defaultProvider);
     const balance = await nftContract.balanceOf(userAddress);
     return balance.toString();
+}
+
+export async function fetchDashboardData() {
+  try {
+    const poolContracts = await getPoolContracts();
+    const [allPoolsInfo, allCollectionsMetadata] = await Promise.all([getPoolInfoFromAddresses(poolContracts), getAllCollectionsMetadata(poolContracts)]);
+    store.BaseCollections = allCollectionsMetadata;
+    const mappedMetadata = await Promise.all(
+      allCollectionsMetadata.map(async (collection) => {
+        const poolInfo = allPoolsInfo.find(
+          (info) => info.address === collection.address
+        );
+        return {
+          ...collection,
+          reward: formatEther(poolInfo?.info?.rewardPerSecond1.mul(86400)),
+          token: (await getERC20Info(poolInfo?.info?.rewardToken1))?.name,
+          endingDate: poolInfo?.info?.endTime.toNumber(),
+          staked: poolInfo?.info?.stakedSupply.toNumber(),
+          poolIndex: poolInfo?.poolIndex,
+        };
+      })
+    );
+
+    return {
+      activeIncentivizedCollections: mappedMetadata,
+      totalReward: 0, // You may want to calculate this
+      totalBalance: 0, // You may want to calculate this
+    };
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    throw error;
+  }
 }

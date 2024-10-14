@@ -1,25 +1,16 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, {useEffect, useState} from "react";
 import Image from "next/image";
-import { SecondaryButton, WalletButton } from "../components/Buttons";
+import {SecondaryButton} from "../components/Buttons";
 import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
 import collectionData from "../../public/collections.json";
-import {
-  claimRewards,
-  getERC20Info,
-  getPoolContracts,
-  getPoolInfoFromAddresses,
-} from "@/app/utils/contracts";
-import { getAllCollectionsMetadata } from "@/app/utils/mintcontracts";
+import {claimRewards,} from "@/app/utils/contracts";
 import ExploreNftCard from "@/app/components/Cards/ExploreNftCard";
-import { formatEther } from "ethers/lib/utils";
-import { useWeb3React } from "@web3-react/core";
-import { useOwnedNFTCount } from "@/app/hooks/useOwnedNFTCount";
+import {useWeb3React} from "@web3-react/core";
+import {useOwnedNFTCount} from "@/app/hooks/useOwnedNFTCount";
 import Link from "next/link";
-import { useAppContext } from "@/app/context/AppContext";
-import { ENV } from "@/env";
-import { store } from "@/app/store";
+import {useAppContext} from "@/app/context/AppContext";
 import CardLoader from "../components/loaders/CardLoader";
 import OStateCard from "../components/EmptyState/OState";
 
@@ -27,80 +18,16 @@ const Page = () => {
   const endedIncentiveCollections = collectionData;
   const { account, chainId, library } = useWeb3React();
   const { totalBalance: totalNFTBalance } = useOwnedNFTCount();
-  const { state, dispatch } = useAppContext();
+  const { state } = useAppContext();
 
   const [showBalance, setShowBalance] = useState(false);
   const handleShowBalance = () => {
     setShowBalance(!showBalance);
   };
 
-  const fetchDashboardData = useCallback(
-    async (isBackground = false) => {
-      if (!isBackground) {
-        dispatch({
-          type: "SET_LOADING",
-          payload: { key: "dashboard", value: true },
-        });
-      }
-
-      try {
-        const poolContracts = await getPoolContracts();
-        const allPoolsInfo = await getPoolInfoFromAddresses(poolContracts);
-        const allCollectionsMetadata = await getAllCollectionsMetadata(
-          poolContracts
-        );
-        store.BaseCollections = allCollectionsMetadata;
-        const mappedMetadata = await Promise.all(
-          allCollectionsMetadata.map(async (collection) => {
-            const poolInfo = allPoolsInfo.find(
-              (info) => info.address === collection.address
-            );
-            return {
-              ...collection,
-              reward: formatEther(poolInfo?.info?.rewardPerSecond1.mul(86400)),
-              token: (await getERC20Info(poolInfo?.info?.rewardToken1))?.name,
-              endingDate: poolInfo?.info?.endTime.toNumber(),
-              staked: poolInfo?.info?.stakedSupply.toNumber(),
-              poolIndex: poolInfo?.poolIndex,
-            };
-          })
-        );
-
-        dispatch({
-          type: "SET_DASHBOARD_DATA",
-          payload: {
-            activeIncentivizedCollections: mappedMetadata,
-            totalReward: state.dashboard?.totalReward || 0,
-            totalBalance: totalNFTBalance,
-          },
-        });
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        if (!isBackground) {
-          dispatch({
-            type: "SET_LOADING",
-            payload: { key: "dashboard", value: false },
-          });
-        }
-      }
-    },
-    [dispatch, state.dashboard?.totalReward, totalNFTBalance]
-  );
-
   useEffect(() => {
-    if (!state.dashboard?.activeIncentivizedCollections.length) {
-      fetchDashboardData();
-    }
-
-    // Set up interval for background fetching
-    const intervalId = setInterval(() => {
-      console.log("Fetching data in background");
-      fetchDashboardData(true);
-    }, ENV.globalBackgroundRefreshInterval); // Fetch every minute
-
-    return () => clearInterval(intervalId);
-  }, [fetchDashboardData]);
+    // You can still update the UI or perform other actions when the dashboard data changes
+  }, [state.dashboard]);
 
   const handleClaim = async () => {
     state.dashboard?.activeIncentivizedCollections?.forEach(
@@ -113,7 +40,7 @@ const Page = () => {
           account
         ).then(async (tx) => {
           // Handle successful claim
-          fetchDashboardData(true);
+          // fetchDashboardData(true);
         });
       }
     );

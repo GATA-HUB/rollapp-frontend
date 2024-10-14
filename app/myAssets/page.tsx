@@ -1,19 +1,14 @@
 "use client";
 
-import React, { useEffect, useCallback, useState } from "react";
-import { SecondaryButton } from "../components/Buttons";
+import React, {useCallback, useEffect, useState} from "react";
+import {SecondaryButton} from "../components/Buttons";
 import NFTAssetCard from "../components/Cards/NFTAssetCard";
 import TokenAssetCard from "../components/Cards/TokenAssetCard";
-import { ENV } from "@/env";
-import {
-  balanceOfUser,
-  getAllCollectionsMetadata,
-} from "@/app/utils/mintcontracts";
-import { BaseCollection } from "@/app/types/nft";
-import { useWeb3React } from "@web3-react/core";
-import { claimRewards } from "@/app/utils/contracts";
-import { useAppContext } from "@/app/context/AppContext";
-import { motion } from "framer-motion";
+import {ENV} from "@/env";
+import {balanceOfUser, getAllCollectionsMetadata,} from "@/app/utils/mintcontracts";
+import {useWeb3React} from "@web3-react/core";
+import {claimRewards} from "@/app/utils/contracts";
+import {useAppContext} from "@/app/context/AppContext";
 import LargeCardLoader from "../components/loaders/LargeCardLoader";
 import OStateCard from "../components/EmptyState/OState";
 

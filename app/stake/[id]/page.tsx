@@ -1,22 +1,18 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import {useParams} from "next/navigation";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { SecondaryButton } from "@/app/components/Buttons";
-import {
-  deposit,
-  fetchTokenBalance,
-  fetchUserNFTs,
-} from "@/app/utils/contracts";
-import { useEffect, useState } from "react";
-import { useWeb3React } from "@web3-react/core";
-import { REACT_APP_NETWORK_ID } from "@/app/chainInfo";
-import { useAppContext } from "@/app/context/AppContext";
+import {motion} from "framer-motion";
+import {SecondaryButton} from "@/app/components/Buttons";
+import {deposit, fetchUserNFTs,} from "@/app/utils/contracts";
+import {useEffect, useState} from "react";
+import {useWeb3React} from "@web3-react/core";
+import {REACT_APP_NETWORK_ID} from "@/app/chainInfo";
+import {useAppContext} from "@/app/context/AppContext";
 import SmallCardLoader from "@/app/components/loaders/SmallCardLoader";
 import EmptyState from "@/app/components/EmptyState/EmptyState";
 import OStateCard from "@/app/components/EmptyState/OState";
-import { balanceOfUser } from "@/app/utils/mintcontracts";
+import {balanceOfUser} from "@/app/utils/mintcontracts";
 
 interface NftsInCollection {
   image: string;
@@ -30,40 +26,62 @@ const Collection = () => {
   const params = useParams();
   const { id } = params;
   const { state } = useAppContext();
-  let collection = state.dashboard?.activeIncentivizedCollections.find(
-    (c) => c.address === id
-  );
-  const [nfts, setNfts] = useState<NftsInCollection[]>([]);
   const { account, library } = useWeb3React();
+
+  const [collection, setCollection] = useState(null);
+  const [nfts, setNfts] = useState<NftsInCollection[]>([]);
   const [stakedAt, setStakedAt] = useState<number>(0);
   const [selectedNfts, setSelectedNfts] = useState<string[]>([]);
   const [mintTokens, setMintTokens] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  if (!collection) {
-    return (
-      <div className="flex mt-[64px] w-full">
-        <EmptyState
-          title="No Collection Found!"
-          desc="Mint some NFTs and try again."
-          href="/"
-          buttonTitle="Mint now"
-        />
-      </div>
-    );
-  }
-
-  if (!account) {
-    return (
-      <div className="flex mt-[88px]">
-        <OStateCard title="Connect your wallet" />
-      </div>
-    );
-  }
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchUserNFTs(id, account).then(setNfts);
-  }, [stakedAt]);
+    if (state.dashboard?.activeIncentivizedCollections) {
+      const foundCollection = state.dashboard.activeIncentivizedCollections.find(
+        (c) => c.address === id
+      );
+      setCollection(foundCollection);
+    }
+  }, [id, state.dashboard]);
+
+  useEffect(() => {
+    if (!state.dashboard || !account || !id) {
+      return;
+    }
+
+    const fetchNFTs = async () => {
+      try {
+        setLoading(true);
+        const fetchedNFTs = await fetchUserNFTs(id, account);
+        setNfts(fetchedNFTs);
+      } catch (error) {
+        console.error("Error fetching user NFTs:", error);
+        setError("Failed to load NFTs. Please try again.");
+        setNfts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNFTs();
+  }, [account, id, stakedAt, state.dashboard]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (account && id) {
+        const balance = await balanceOfUser(account, id);
+        setMintTokens(balance);
+        if (balance > 0) {
+          setLoading(true);
+        } else {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchBalance();
+  }, [account, id, nfts]);
 
   const toggleNftSelection = (tokenId: string) => {
     setSelectedNfts((prev) =>
@@ -100,19 +118,27 @@ const Collection = () => {
     });
   };
 
-  useEffect(() => {
-    const fetchBalance = async () => {
-      const balance = await balanceOfUser(account, id);
-      setMintTokens(balance);
-      if (balance > 0) {
-        setLoading(true);
-      } else setLoading(false);
-    };
+  if (!collection) {
+    return (
+      <div className="flex mt-[64px] w-full">
+        <EmptyState
+          title="No Collection Found!"
+          desc="Mint some NFTs and try again."
+          href="/"
+          buttonTitle="Mint now"
+        />
+      </div>
+    );
+  }
 
-    fetchBalance();
-  }, [nfts]);
+  if (!account) {
+    return (
+      <div className="flex mt-[88px]">
+        <OStateCard title="Connect your wallet" />
+      </div>
+    );
+  }
 
-  console.log("Loading time", mintTokens);
   return (
     <div className="page">
       <div className="flex flex-col gap-2 sm:w-1/2">
@@ -178,30 +204,9 @@ const Collection = () => {
         <>
           {loading ? (
             <div className="w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
-              <SmallCardLoader />
+              {[...Array(24)].map((_, index) => (
+                <SmallCardLoader key={index} />
+              ))}
             </div>
           ) : (
             <EmptyState

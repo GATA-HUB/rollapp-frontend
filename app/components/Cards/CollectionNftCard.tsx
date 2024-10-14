@@ -1,9 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import React, { useState } from "react";
+import {motion} from "framer-motion";
+import React, {useState} from "react";
 import Image from "next/image";
-import MintPopup from "../Popup/MintPopup";
 import Link from "next/link";
 import {BaseCollection} from "@/app/types/nft";
 
@@ -23,7 +22,7 @@ const CollectionNftCard = ({ nft, index }: Props) => {
     setshowPopup(!showPopup);
   };
   return (
-    <Link href={`/stake/${index}`}>
+    <Link href={`/stake/${nft.address?.toLowerCase()}`}>
       <motion.div
         style={{
           border: "1px solid rgba(255, 255, 255, 0.1)",

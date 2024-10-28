@@ -64,16 +64,25 @@ const MintPopup = ({ nft, onClose }: Props) => {
   if (mintSuccess) {
     return (
       <div className="z-20 fixed top-0 left-0 right-0 flex items-center justify-center w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm p-8">
-        <div className="max-w-[360px] flex flex-col gap-4 items-center text-center">
-          <Image width={160} height={160} alt="" src="/successTrans.png" />
-          <h1>Amazing! You've Done it Successfully.</h1>
-          <p className="text-textGray">
-            You have successfully minted {nft.collection}!
-          </p>
-          <PrimaryButton onClick={() => setMintSuccess(false)}>
-            Back to {nft.collection}
-          </PrimaryButton>
-          <SecondaryButton onClick={onClose}>Back to Mint</SecondaryButton>
+        <div className="relative max-w-[512px] p-16 flex flex-col gap-4 items-center text-center overflow-hidden rounded-2xl border-[1px] border-white border-opacity-10">
+          <Image
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+            alt=""
+            src="/bg/noticeCard.jpg"
+          />
+          <div className="z-10 flex flex-col gap-4 items-center">
+            <Image width={160} height={160} alt="" src="/successTrans.png" />
+            <h1>Amazing! You've Done it Successfully.</h1>
+            <p className="text-textGray">
+              You have successfully minted {nft.collection}!
+            </p>
+            <PrimaryButton onClick={() => setMintSuccess(false)}>
+              Back to {nft.collection}
+            </PrimaryButton>
+            <SecondaryButton onClick={onClose}>Back to Mint</SecondaryButton>
+          </div>
         </div>
       </div>
     );
@@ -82,14 +91,23 @@ const MintPopup = ({ nft, onClose }: Props) => {
   if (mintFailed) {
     return (
       <div className="z-20 fixed top-0 left-0 right-0 flex items-center justify-center w-screen h-screen bg-black bg-opacity-60 backdrop-blur-sm p-8">
-        <div className="max-w-[360px] flex flex-col gap-4 items-center text-center">
-          <Image width={160} height={160} alt="" src="/errorTrans.png" />
-          <h1>Something went wrong!</h1>
-          <p className="text-textGray">Failed to mint! Please try again.</p>
-          <PrimaryButton onClick={() => setMintFailed(false)}>
-            Back to {nft.collection}
-          </PrimaryButton>
-          <TertiaryButton onClick={onClose}>Back to Mint</TertiaryButton>
+        <div className="relative max-w-[512px] p-16 flex flex-col gap-4 items-center text-center overflow-hidden rounded-2xl border-[1px] border-white border-opacity-10">
+          <Image
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+            alt=""
+            src="/bg/noticeCard.jpg"
+          />
+          <div className="z-10 flex flex-col gap-4 items-center">
+            <Image width={160} height={160} alt="" src="/errorTrans.png" />
+            <h1>Something went wrong!</h1>
+            <p className="text-textGray">Failed to mint! Please try again.</p>
+            <PrimaryButton onClick={() => setMintFailed(false)}>
+              Back to {nft.collection}
+            </PrimaryButton>
+            <TertiaryButton onClick={onClose}>Back to Mint</TertiaryButton>
+          </div>
         </div>
       </div>
     );

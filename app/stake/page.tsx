@@ -121,7 +121,7 @@ const Page = () => {
         {account ? (
           <div className="flex w-full">
             {state.loading.staked ? (
-              <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+              <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                 <CardLoader />
                 <CardLoader />
                 <CardLoader />
@@ -132,7 +132,7 @@ const Page = () => {
             ) : (
               <>
                 {state.staked?.stakedCollections?.length ? (
-                  <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                  <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                     {state.staked?.stakedCollections?.map((nft, i) => (
                       <StakeCollCard key={i} index={i} stakedNfts={nft} />
                     ))}

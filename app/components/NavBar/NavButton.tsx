@@ -7,12 +7,13 @@ interface Props {
   children: React.ReactNode;
   icon: string;
   href: string;
+  width?: string;
 }
 
-const page = ({ children, icon, href }: Props) => {
+const page = ({ children, icon, href, width }: Props) => {
   const pathname = usePathname();
   return (
-    <Link href={href}>
+    <Link className={width ? "w-full" : "w-fit"} href={href}>
       <div
         className={`group flex items-center justify-center px-4 py-2 rounded-lg gap-2 bg-primary ${
           pathname === href

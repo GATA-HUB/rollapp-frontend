@@ -87,12 +87,10 @@ export function AppWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!state.dashboard) {
-          dispatch({
-            type: "SET_LOADING",
-            payload: { key: "dashboard", value: true },
-          });
-        }
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: true },
+        });
         const dashboardData = await fetchDashboardData();
         dispatch({
           type: "SET_DASHBOARD_DATA",
@@ -101,12 +99,10 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
-        if (!state.dashboard) {
-          dispatch({
-            type: "SET_LOADING",
-            payload: { key: "dashboard", value: false },
-          });
-        }
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: false },
+        });
       }
     };
 

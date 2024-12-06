@@ -37,9 +37,3 @@ next-env.d.ts
 
 .mnemonic
 .idea
-.next
-.env
-node_modules
-artifacts
-typechain-types
-cache

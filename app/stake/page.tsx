@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import StakeCollCard from "../components/Cards/StakeCollCard";
-import collectionData from "../../../public/collections.json";
+import collectionData from "../../public/collections.json";
 import { useWeb3React } from "@web3-react/core";
 import {
   fetchNFTCollectionDetails,

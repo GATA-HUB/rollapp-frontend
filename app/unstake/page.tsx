@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
 import StakeCollCard from "../components/Cards/StakeCollCard";
-import collectionData from "../../../public/collections.json";
+import collectionData from "../../public/collections.json";
 import UnStakeCollCard from "@/app/components/Cards/UnStakeCollCard";
 
 interface NftsInCollection {

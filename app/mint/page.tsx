@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback, useState } from "react";
 import MintCard from "../components/Cards/MintCard";
 import MintCollCard from "../components/Cards/MintCollCard";
-import mintData from "../../../public/mintColl.json";
+import mintData from "../../public/mintColl.json";
 import { ethers } from "ethers";
 import {
   getAllCollectionsMetadata,

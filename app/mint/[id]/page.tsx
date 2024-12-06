@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, usePathname, useRouter } from "next/navigation";
-import collections from "../../../../public/mintColl.json";
+import collections from "../../../public/mintColl.json";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { PrimaryButton, SecondaryButton } from "@/app/components/Buttons";

@@ -87,7 +87,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!state.dashboard) {
+        if (!state.dashboard?.activeIncentivizedCollections?.length) {
           dispatch({
             type: "SET_LOADING",
             payload: { key: "dashboard", value: true },
@@ -101,12 +101,10 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
-        if (!state.dashboard) {
-          dispatch({
-            type: "SET_LOADING",
-            payload: { key: "dashboard", value: false },
-          });
-        }
+        dispatch({
+          type: "SET_LOADING",
+          payload: { key: "dashboard", value: false },
+        });
       }
     };
 

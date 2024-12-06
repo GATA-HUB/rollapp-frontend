@@ -102,7 +102,7 @@ const Page = () => {
         </div>
 
         {account ? (
-          <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
             {state.loading.mint ? (
               <>
                 <CardLoader />
@@ -132,7 +132,7 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="w-full grid grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {initialMintNfts.map((nft, i) => {
             if (!nft.endingDate) {
               return <MintCollCard key={i} index={i} nft={nft} />;

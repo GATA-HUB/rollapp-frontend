@@ -1,14 +1,17 @@
 "use client";
 
-import React, {useCallback, useEffect, useState} from "react";
-import {SecondaryButton} from "../components/Buttons";
+import React, { useCallback, useEffect, useState } from "react";
+import { SecondaryButton } from "../components/Buttons";
 import NFTAssetCard from "../components/Cards/NFTAssetCard";
 import TokenAssetCard from "../components/Cards/TokenAssetCard";
-import {ENV} from "@/env";
-import {balanceOfUser, getAllCollectionsMetadata,} from "@/app/utils/mintcontracts";
-import {useWeb3React} from "@web3-react/core";
-import {claimRewards} from "@/app/utils/contracts";
-import {useAppContext} from "@/app/context/AppContext";
+import { ENV } from "@/env";
+import {
+  balanceOfUser,
+  getAllCollectionsMetadata,
+} from "@/app/utils/mintcontracts";
+import { useWeb3React } from "@web3-react/core";
+import { claimRewards } from "@/app/utils/contracts";
+import { useAppContext } from "@/app/context/AppContext";
 import LargeCardLoader from "../components/loaders/LargeCardLoader";
 import OStateCard from "../components/EmptyState/OState";
 
@@ -119,9 +122,9 @@ const Page = () => {
 
   return (
     <div className="page">
-      <div className="w-full grid grid-cols-7 gap-4 items-end">
+      <div className="w-full grid grid-cols-4 2xl:grid-cols-7 gap-4 items-end">
         {/* Loyalty */}
-        <div className="flex flex-col gap-2 col-span-3">
+        <div className="flex flex-col gap-2 col-span-4 2xl:col-span-3">
           <h2 className="text-white">Assets</h2>
           <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
             <div className="flex flex-col gap-1 z-10">
@@ -187,16 +190,16 @@ const Page = () => {
         </div>
 
         {/* Assets */}
-        <div className="flex flex-col gap-2 col-span-2">
+        <div className="flex flex-col gap-2 col-span-4 lg:col-span-2">
           <div className="grid grid-cols-2 gap-4">
-            <div className="group w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
+            <div className="group col-span-2 md:col-span-1 w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
               <div className="flex flex-col gap-1 z-10">
                 <h5>tokens</h5>
                 <h1>25</h1>
               </div>
             </div>
 
-            <div className="group w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
+            <div className="group col-span-2 md:col-span-1 w-full flex flex-col gap-1 justify-end p-4 rounded-lg bg-black border-[1px] border-white border-opacity-10 overflow-hidden">
               <div className="flex flex-col gap-1 z-10">
                 <h5>NFTs</h5>
                 <h1>{state.assets?.totalBalance || 0}</h1>
@@ -206,7 +209,7 @@ const Page = () => {
         </div>
 
         {/* Rewards */}
-        <div className="flex flex-col gap-2 col-span-2">
+        <div className="flex flex-col gap-2 col-span-4 lg:col-span-2">
           <div className="w-full flex gap-1 justify-between items-center p-4 rounded-lg gradient-background border-[1px] border-white border-opacity-10 overflow-hidden">
             <div className="flex flex-col gap-1 z-10">
               <h5>Rewards</h5>
@@ -221,7 +224,7 @@ const Page = () => {
 
       <div className="grid grid-cols-2 gap-4 w-full">
         {/* all nft's */}
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 col-span-2 lg:col-span-1">
           <div className="w-full flex gap-4 items-center justify-between">
             <div className="flex gap-4">
               <h2>
@@ -258,7 +261,7 @@ const Page = () => {
         </div>
 
         {/* all tokens */}
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-2 col-span-2 lg:col-span-1">
           <div className="w-full flex gap-4 items-center justify-between">
             <div className="flex gap-4">
               <h2>Tokens</h2>

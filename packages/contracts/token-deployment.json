@@ -1,0 +1,8 @@
+{
+  "network": "customnet",
+  "token": {
+    "name": "Gata",
+    "symbol": "GATA",
+    "address": "0x7A1BC3F7D46d615bBb9592f46d8BDf5bCA2e07FF"
+  }
+}

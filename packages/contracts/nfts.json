@@ -1,0 +1,28 @@
+{
+  "nfts": [
+    {
+      "name": "GATA GAZW 7",
+      "symbol": "GG7",
+      "baseURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json",
+      "metadataURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json"
+    },
+    {
+      "name": "Gata Horizons",
+      "symbol": "GH",
+      "baseURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_horizons.json",
+      "metadataURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_horizons.json"
+    },
+    {
+      "name": "Yield Paws",
+      "symbol": "YP",
+      "baseURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_paws.json",
+      "metadataURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_paws.json"
+    },
+    {
+      "name": "Yield Gorillas",
+      "symbol": "YG",
+      "baseURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_yield.json",
+      "metadataURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_yield.json"
+    }
+  ]
+} 

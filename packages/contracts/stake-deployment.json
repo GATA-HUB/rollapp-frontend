@@ -1,0 +1,7 @@
+{
+  "network": "customnet",
+  "stake": {
+    "name": "TycheStakeMultiPoolSupport",
+    "address": "0x984bc9B5282e2F7cC5949AFfa70e599a8050b675"
+  }
+}

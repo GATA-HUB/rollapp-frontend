@@ -1,33 +1,20 @@
 {
-  "name": "gata_rollapp",
-  "version": "0.1.0",
+  "name": "gata-rollapp",
+  "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.12.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@ethersproject/contracts": "^5.7.0",
-    "@netlify/plugin-nextjs": "^5.6.0",
-    "@web3-react/core": "6.0.9",
-    "@web3-react/injected-connector": "^6.0.7",
-    "axios": "^1.7.3",
-    "ethers": "5.6.9",
-    "framer-motion": "^11.2.0",
-    "lodash": "^4.17.21",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  },
-  "packageManager": "pnpm@9.12.0+sha512.4abf725084d7bcbafbd728bfc7bee61f2f791f977fd87542b3579dcb23504d170d46337945e4c66485cd12d588a0c0e570ed9c477e7ccdd8507cf05f3f92eaca"
+    "dev": "pnpm --filter @gata-rollapp/web dev",
+    "build": "pnpm --filter @gata-rollapp/web build",
+    "start": "pnpm --filter @gata-rollapp/web start",
+    "contracts:compile": "pnpm --filter @gata-rollapp/contracts compile",
+    "contracts:test": "pnpm --filter @gata-rollapp/contracts test",
+    "contracts:deploy": "pnpm --filter @gata-rollapp/contracts deploy",
+    "clean": "pnpm -r run clean",
+    "build:all": "pnpm -r run build"
+  }
 }

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import {SecondaryButton} from "../components/Buttons";
 import ExploreNftCardDummy from "../components/Cards/ExploreNftCardDummy";
-import collectionData from "../../public/collections.json";
+import collectionData from "../../../public/collections.json";
 import {claimRewards,} from "@/app/utils/contracts";
 import ExploreNftCard from "@/app/components/Cards/ExploreNftCard";
 import {useWeb3React} from "@web3-react/core";

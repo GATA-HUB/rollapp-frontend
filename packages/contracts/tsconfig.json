@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "outDir": "dist",
+    "rootDir": ".",
+    "composite": true,
+    "typeRoots": [
+      "../../node_modules/@types",
+      "./typechain-types"
+    ],
+    "types": [
+      "node",
+      "mocha",
+      "chai"
+    ]
+  },
+  "include": [
+    "hardhat.config.ts",
+    "./scripts",
+    "./test",
+    "./typechain-types"
+  ],
+  "files": [
+    "hardhat.config.ts"
+  ]
+} 

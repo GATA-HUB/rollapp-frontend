@@ -2,14 +2,14 @@
 const nextConfig = {
     reactStrictMode: false,
     images: {
-        domains: ['ipfs.io'], // Add your domain here
+        domains: ['ipfs.io'],
     },
     eslint: {
         ignoreDuringBuilds: true,
     },
     typescript: {
         ignoreBuildErrors: true,
-    },
+    }
 };
 
 export default nextConfig;

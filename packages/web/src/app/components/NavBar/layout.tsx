@@ -124,7 +124,7 @@ const Page = () => {
       <div className="w-full max-w-[1856px] flex items-center justify-between">
         <Link href="https://gatahub.zone">
           <div className="flex">
-            <Image width={126} height={32} alt="" src="/mainLogo.svg" />
+            <Image width={126} height={32} alt="" src="/mainLogo.png" />
           </div>
         </Link>
         <div className="hidden lg:flex items-center gap-4">

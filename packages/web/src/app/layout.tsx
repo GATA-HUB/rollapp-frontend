@@ -6,6 +6,7 @@ import {Providers} from "@/app/providers";
 import {RewardTracker} from "@/app/components/RewardTracker";
 import {OwnedNFTTracker} from "@/app/components/OwnedNFTTracker";
 import {AppWrapper} from '@/app/context/AppContext';
+import { Analytics } from "@vercel/analytics/next"
 
 const jost = Jost({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
             <NavBar />
             <div className="w-full max-w-[1440px] flex flex-col items-center">
               {children}
+              <Analytics />
             </div>
           </Providers>
         </AppWrapper>

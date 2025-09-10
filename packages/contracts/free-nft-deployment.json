@@ -1,0 +1,10 @@
+{
+  "network": "base",
+  "nft": {
+    "name": "GATA Free Collection",
+    "symbol": "GFREE",
+    "address": "0xb24ac5D0C75b48A7F80af74937Ab88828fA4aA82",
+    "mintPrice": "0",
+    "note": "Free minting available via freeMint() function"
+  }
+}

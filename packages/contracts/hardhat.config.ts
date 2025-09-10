@@ -29,10 +29,27 @@ const config: HardhatUserConfig = {
     customnet: {
       url: process.env.RPC_URL || "http://localhost:8545",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : []
+    },
+    base: {
+      url: "https://mainnet.base.org",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 8453
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    apiKey: {
+      base: process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_API_KEY
+    },
+    customChains: [
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org"
+        }
+      }
+    ]
   }
 };
 

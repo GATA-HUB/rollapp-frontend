@@ -89,7 +89,7 @@ export async function getDecimals(address, chainId = null, provider = defaultPro
     }
 }
 export async function getOwnerOfFactory(chainId, provider) {
-    const stakeFactoryContract = getContractObj("TycheStake", chainId, provider);
+    const stakeFactoryContract = getContractObj("GataStake", chainId, provider);
     try {
         const stakeOwner = await stakeFactoryContract.owner();
         return stakeOwner.toString().toLowerCase();
@@ -109,7 +109,7 @@ export async function getTotalSupply(collection, chainId, provider) {
     }
 }
 export async function createStakingPool(stakeToken, rewardToken1, reward1PerSecond, rewardToken2, reward2PerSecond, startTime, endTime, chainId, provider) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         let _rewardToken2 = rewardToken2; let _reward2PerSecond = reward2PerSecond;
         if (!rewardToken2) { _rewardToken2 = ZERO_ADDRESS; _reward2PerSecond = 0 };
@@ -122,7 +122,7 @@ export async function createStakingPool(stakeToken, rewardToken1, reward1PerSeco
 }
 export async function getPoolInfo(chainId, provider = defaultProvider) {
     let poolInfo = [];
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         const poolContracts = await stakeContract.getPoolContracts();
         console.log("Getting pool info for contracts:", poolContracts);
@@ -146,7 +146,7 @@ export async function getPoolInfo(chainId, provider = defaultProvider) {
 }
 
 export async function getPoolContracts() {
-    const stakeContract = getContractObj("TycheStake", null, defaultProvider);
+    const stakeContract = getContractObj("GataStake", null, defaultProvider);
     try {
         const poolContracts = await stakeContract.getPoolContracts();
         let pool_contracts = [];
@@ -159,7 +159,7 @@ export async function getPoolContracts() {
 }
 export async function getPoolInfoFromAddresses() {
     let poolInfo = [];
-    const stakeContract = getContractObj("TycheStake", null, defaultProvider);
+    const stakeContract = getContractObj("GataStake", null, defaultProvider);
     try {
         const poolContracts = await stakeContract.getPoolContracts();
         for (let i = 0; i < poolContracts.length; i++) {
@@ -181,14 +181,14 @@ export async function getPoolInfoFromAddresses() {
 }
 
 export async function getOnePoolInfo(address, poolIndex) {
-    const stakeContract = getContractObj("TycheStake", null, defaultProvider);
+    const stakeContract = getContractObj("GataStake", null, defaultProvider);
     try {
         const info = await stakeContract.pools(address, poolIndex);
         return info;
     } catch (e1) { console.log(e1); return null; }
 }
 export async function getUserInfoFromAddresses(user_address, addrList) {
-    const stakeContract = getContractObj("TycheStake", null, defaultProvider);
+    const stakeContract = getContractObj("GataStake", null, defaultProvider);
     let userInfo = [];
 
     for (let address of addrList) {
@@ -208,7 +208,7 @@ export async function getUserInfoFromAddresses(user_address, addrList) {
 }
 export async function getUserOneInfo(user_address, stakeAddress) {
     let userInfo = null;
-    const stakeContract = getContractObj("TycheStake", null, defaultProvider);
+    const stakeContract = getContractObj("GataStake", null, defaultProvider);
     try {
         // const info = await stakeContract.users(user_address, stakeAddress);
         const info = await stakeContract.checkUser(user_address, stakeAddress, 0);
@@ -218,12 +218,12 @@ export async function getUserOneInfo(user_address, stakeAddress) {
 }
 
 export async function iApprovedForStaking(account, collection, chainId, provider) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     const collectionContract = getCollectionContract(collection, chainId, provider);
     return await collectionContract.isApprovedForAll(account, stakeContract.address);
 }
 export async function setApprovedForStaking(collection, chainId, provider) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     const collectionContract = getCollectionContract(collection, chainId, provider);
     try {
         const tx = await collectionContract.setApprovalForAll(stakeContract.address, true);
@@ -236,7 +236,7 @@ export async function setApprovedForStaking(collection, chainId, provider) {
 }
 export async function deposit(from, collection, poolIndex, tokenIds, chainId, provider, signerAddress) {
     console.log("token IDS: ", tokenIds);
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         let isApproved = await iApprovedForStaking(from, collection, chainId, provider);
         if (!isApproved) {
@@ -264,7 +264,7 @@ export async function deposit(from, collection, poolIndex, tokenIds, chainId, pr
 }
 
 export async function claimRewards(collection, poolIndex, chainId, provider, signerAddress) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
 
     try {
         // Estimate gas for the transaction
@@ -291,7 +291,7 @@ export async function claimRewards(collection, poolIndex, chainId, provider, sig
 }
 
 export async function withdrawAll(collection, poolIndex, chainId, provider, signerAddress) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         // Estimate gas for the transaction
         const estimatedGas = await stakeContract.estimateGas.unstake(collection, poolIndex);
@@ -313,7 +313,7 @@ export async function withdrawAll(collection, poolIndex, chainId, provider, sign
     }
 }
 export async function withdrawOne(collection, tokenId, poolIndex, chainId, provider, signerAddress) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         // Estimate gas for the transaction
         const estimatedGas = await stakeContract.estimateGas.unstakeOne(collection, poolIndex, tokenId);
@@ -333,7 +333,7 @@ export async function withdrawOne(collection, tokenId, poolIndex, chainId, provi
     }
 }
 export async function updatePoolRate(collection, newRate1, newRate2, poolIndex, chainId, provider) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         const tx = await stakeContract.updateRewardRate(collection, newRate1, newRate2, poolIndex);
         await tx.wait(1);
@@ -344,7 +344,7 @@ export async function updatePoolRate(collection, newRate1, newRate2, poolIndex, 
     }
 }
 export async function getUserTokenIds(user_address, collection, poolIndex, chainId, provider) {
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         const tokenIds = await stakeContract.getUserTokenIds(user_address, collection, poolIndex);
         return tokenIds;
@@ -356,7 +356,7 @@ export async function getUserTokenIds(user_address, collection, poolIndex, chain
 
 export async function liveRewards(_user, stakeToken, poolIndex, chainId, provider) {
     console.log("liveRewards: ", _user, stakeToken, poolIndex, chainId);
-    const stakeContract = getContractObj("TycheStake", chainId, provider);
+    const stakeContract = getContractObj("GataStake", chainId, provider);
     try {
         const tx = await stakeContract.checkRewards(_user, stakeToken, poolIndex);
         return tx;

@@ -14,9 +14,9 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "GataHub Rollapp",
+  title: "GataHub",
   description:
-    "Explore the GATAHUB dApp rollapp and empower your digital journey. Seamlessly access and interact with decentralized applications on any device, revolutionizing your blockchain experience. Dive into a world of possibilities, from finance to gaming, with our intuitive platform. Unlock the full potential of decentralized technologies with ease.",
+    "Explore the GATAHUB dApp and empower your digital journey. Seamlessly access and interact with decentralized applications on any device, revolutionizing your blockchain experience. Dive into a world of possibilities, from finance to gaming, with our intuitive platform. Unlock the full potential of decentralized technologies with ease.",
 };
 
 export default function RootLayout({

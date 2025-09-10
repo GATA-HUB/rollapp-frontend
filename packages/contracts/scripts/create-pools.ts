@@ -25,7 +25,7 @@ task("create-pools", "Creates staking pools for each NFT contract")
 
       // Get the staking contract
       const stakeContract = await hre.ethers.getContractAt(
-        "TycheStakeMultiPoolSupport",
+        "GataStakeMultiPoolSupport",
         stakeDeployment.stake.address
       );
 

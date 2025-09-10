@@ -53,9 +53,26 @@ const Page = () => {
                 "ipfs://",
                 ENV.ipfsGateway
               );
-              metadata = await fetch(ipfsGatewayMetadata).then((response) =>
-                response.json()
-              );
+              
+              // Default fallback metadata
+              metadata = {
+                description: "A unique NFT collection on the GATA platform",
+                image: "/nfts/06.gif"
+              };
+              
+              try {
+                const response = await fetch(ipfsGatewayMetadata);
+                if (response.ok) {
+                  const fetchedMetadata = await response.json();
+                  metadata = {
+                    description: fetchedMetadata.description || metadata.description,
+                    image: fetchedMetadata.image || metadata.image
+                  };
+                }
+              } catch (error) {
+                console.log(`Using fallback metadata for staking due to IPFS fetch error:`, error);
+              }
+              
               setToLocalStorage(storageKey, metadata);
             }
 

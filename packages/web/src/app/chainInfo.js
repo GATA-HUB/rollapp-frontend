@@ -1,5 +1,5 @@
 "use client";
-export let REACT_APP_NETWORK_ID = 28182;
+export let REACT_APP_NETWORK_ID = 8453;
 if (typeof window !== 'undefined') {
   REACT_APP_NETWORK_ID = window.localStorage.getItem('selectedNetworkID') || REACT_APP_NETWORK_ID;
 }
@@ -31,7 +31,7 @@ export const chainInfo = {
     REACT_APP_NODE_2: "https://zksync-era.blockpi.network/v1/rpc/public",
     REACT_APP_NODES: ["https://mainnet.era.zksync.io","https://zksync-era.blockpi.network/v1/rpc/public"],
     REACT_APP_SUBGRAPH:
-      "https://api.studio.thegraph.com/query/50580/tyche-stake-all-nfts/0.0.1",
+      "https://api.studio.thegraph.com/query/50580/Gata-stake-all-nfts/0.0.1",
     REACT_APP_BASE_URL: "https://gatahub.zone/",
   },
   84531: {
@@ -114,8 +114,8 @@ export const chainInfo = {
     REACT_APP_NETWORK_ICON: "https://pg.dym.fyi/images/svg/brands/main.svg?v=23.08.01.1",
     REACT_APP_NETWORK: "Gata",
     REACT_APP_COIN: "agata",
-    REACT_APP_NODE_1: "https://evm.dangerous-tiger-29.telebit.io",
-    REACT_APP_NODES: ["https://evm.dangerous-tiger-29.telebit.io"],
+    REACT_APP_NODE_1: "https://dymension-evm.blockpi.network/v1/rpc/public",
+    REACT_APP_NODES: ["https://dymension-evm.blockpi.network/v1/rpc/public"],
     REACT_APP_SUBGRAPH:
       "https://api.studio.thegraph.com/query/50580/base-selected-contracts-only/1.0.0",
     REACT_APP_BASE_URL: "https://gatahub.zone/",

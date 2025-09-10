@@ -1,0 +1,11 @@
+{
+  "network": "base",
+  "nftContract": "0xb24ac5D0C75b48A7F80af74937Ab88828fA4aA82",
+  "rewardToken": "0xdA1030Df43123ED7D3f52A9Fc2426A69e538AF85",
+  "stakeContract": "0xc33b2d4F95177561240069f2d4a582b603f0123e",
+  "poolIndex": 1,
+  "startTime": "1757463450",
+  "endTime": "1762647450",
+  "rewardPerSecond": "2000000000000000000",
+  "note": "Higher reward rate for free NFT collection"
+}

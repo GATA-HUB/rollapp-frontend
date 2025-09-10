@@ -3,20 +3,25 @@ import { writeFileSync } from "fs";
 import { join } from "path";
 import type { TaskArgs, HardhatRuntimeEnvironment } from "./types";
 
-task("deploy-token", "Deploys the Gata token contract")
+task("deploy-single-nft", "Deploys a single NFT contract for Base")
   .setAction(async (taskArgs: TaskArgs, hre: HardhatRuntimeEnvironment) => {
     try {
-      console.log("Deploying Gata token contract...");
+      console.log("Deploying single NFT contract for Base...");
       
       // Get the contract factory
-      const GataToken = await hre.ethers.getContractFactory("Gata");
+      const NFTContract = await hre.ethers.getContractFactory("GataNFT");
       
-      // Deploy contract
-      const token = await GataToken.deploy();
+      // Deploy contract with specific parameters for Base
+      const nft = await NFTContract.deploy(
+        "GATA NFT Collection",
+        "GATA",
+        "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json",
+        "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json"
+      );
       
       // Wait for deployment
-      await token.deployed();
-      const deployedAddress = token.address;
+      await nft.deployed();
+      const deployedAddress = nft.address;
       
       // Verify contract on etherscan if not on local network and API key is available
       if (hre.network.name !== "localhost" && hre.network.name !== "hardhat" && hre.network.name !== "customnet" && process.env.BASESCAN_API_KEY) {
@@ -24,7 +29,12 @@ task("deploy-token", "Deploys the Gata token contract")
         try {
           await hre.run("verify:verify", {
             address: deployedAddress,
-            constructorArguments: [],
+            constructorArguments: [
+              "GATA NFT Collection",
+              "GATA",
+              "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json",
+              "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json"
+            ],
           });
         } catch (error) {
           console.log("Verification failed:", error.message);
@@ -36,19 +46,19 @@ task("deploy-token", "Deploys the Gata token contract")
       // Write deployment info to file
       const deploymentInfo = {
         network: hre.network.name,
-        token: {
-          name: "Gata",
+        nft: {
+          name: "GATA NFT Collection",
           symbol: "GATA",
           address: deployedAddress
         }
       };
       
       writeFileSync(
-        join(process.cwd(), "token-deployment.json"),
+        join(process.cwd(), "nft-deployment.json"),
         JSON.stringify(deploymentInfo, null, 2)
       );
       
-      console.log("Gata token deployed to:", deployedAddress);
+      console.log("GATA NFT Collection deployed to:", deployedAddress);
       
     } catch (error) {
       console.error("Deployment failed:", error);

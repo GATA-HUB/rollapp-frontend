@@ -28,18 +28,24 @@ task("deploy-nfts", "Deploys NFT contracts from config")
         await nft.deployed();
         const deployedAddress = nft.address;
         
-        // Verify contract on etherscan if not on local network
-        if (hre.network.name !== "localhost" && hre.network.name !== "hardhat" && hre.network.name !== "customnet") {
+        // Verify contract on etherscan if not on local network and API key is available
+        if (hre.network.name !== "localhost" && hre.network.name !== "hardhat" && hre.network.name !== "customnet" && process.env.BASESCAN_API_KEY) {
           console.log("Verifying contract on Etherscan...");
-          await hre.run("verify:verify", {
-            address: deployedAddress,
-            constructorArguments: [
-              nftConfig.name,
-              nftConfig.symbol, 
-              nftConfig.baseURI,
-              nftConfig.metadataURI
-            ],
-          });
+          try {
+            await hre.run("verify:verify", {
+              address: deployedAddress,
+              constructorArguments: [
+                nftConfig.name,
+                nftConfig.symbol, 
+                nftConfig.baseURI,
+                nftConfig.metadataURI
+              ],
+            });
+          } catch (error) {
+            console.log("Verification failed:", error.message);
+          }
+        } else {
+          console.log("Skipping verification (no API key or local network)");
         }
         
         deployedContracts.push({

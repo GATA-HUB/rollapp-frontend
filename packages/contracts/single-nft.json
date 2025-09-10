@@ -1,0 +1,10 @@
+{
+  "nfts": [
+    {
+      "name": "GATA GAZW 7",
+      "symbol": "GG7",
+      "baseURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json",
+      "metadataURI": "ipfs://QmPC9t91yqmBvQ3A169QfP4cFJmwU9iKUCPnFs4o6YAYWM/Gata_NFT_metadata_gg7.json"
+    }
+  ]
+}

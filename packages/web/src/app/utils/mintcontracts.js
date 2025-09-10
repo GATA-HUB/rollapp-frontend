@@ -47,18 +47,46 @@ export async function getAllCollectionsMetadata(liveMints, provider = defaultPro
             // If data doesn't exist in localStorage, fetch all metadata
             const contract = new Contract(collectionAddress, NFTABI, provider);
             const metadataMethods = ['totalSupply', 'name', 'owner', '_publicSalePrice', 'metadataURI', '_publicSaleEndTime', 'maxSupply'];
-            const [
-                totalSupply,
-                name,
-                owner,
-                _publicSalePrice,
-                metadataURI,
-                _publicSaleEndTime,
-                maxSupply
-            ] = await Promise.all(metadataMethods.map(method => contract[method]()));
+            
+            let totalSupply, name, owner, _publicSalePrice, metadataURI, _publicSaleEndTime, maxSupply;
+            
+            try {
+                [
+                    totalSupply,
+                    name,
+                    owner,
+                    _publicSalePrice,
+                    metadataURI,
+                    _publicSaleEndTime,
+                    maxSupply
+                ] = await Promise.all(metadataMethods.map(method => contract[method]()));
+            } catch (error) {
+                console.error(`Error fetching contract data for ${collectionAddress}:`, error);
+                // Use fallback values
+                totalSupply = { toNumber: () => 0 };
+                name = "Unknown Collection";
+                owner = "0x0000000000000000000000000000000000000000";
+                _publicSalePrice = ethers.BigNumber.from(0);
+                metadataURI = "";
+                _publicSaleEndTime = { toNumber: () => Date.now() / 1000 + 86400 };
+                maxSupply = { toNumber: () => 5000 };
+            }
 
             const ipfsGatewayMetadata = metadataURI.replace('ipfs://', ENV.ipfsGateway)
-            const {description, image} = await fetch(ipfsGatewayMetadata).then(response => response.json());
+            let description = "A unique NFT collection on the GATA platform";
+            let image = "/nfts/06.gif"; // Default fallback image
+            
+            try {
+                const response = await fetch(ipfsGatewayMetadata);
+                if (response.ok) {
+                    const metadata = await response.json();
+                    description = metadata.description || description;
+                    image = metadata.image || image;
+                }
+            } catch (error) {
+                console.log(`Using fallback metadata for ${name} due to IPFS fetch error:`, error);
+                // Fallback values are already set above
+            }
 
             collectionData = {
                 image: image.replace('ipfs://', ENV.ipfsGateway),

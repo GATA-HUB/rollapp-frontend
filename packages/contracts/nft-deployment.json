@@ -1,0 +1,8 @@
+{
+  "network": "base",
+  "nft": {
+    "name": "GATA NFT Collection",
+    "symbol": "GATA",
+    "address": "0xCB55Cb70ed4965Db3A219D316b6c41d4Ac49bBB8"
+  }
+}

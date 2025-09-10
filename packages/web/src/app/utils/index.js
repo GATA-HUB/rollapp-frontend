@@ -2,7 +2,7 @@
 import { Contract } from "@ethersproject/contracts";
 import ERC20ABI from "../contracts/ERC20.json";
 import ERC721ABI from "../contracts/ERC721.json";
-import TycheStakeABI from "../contracts/TycheStake.json";
+import GataStakeABI from "../contracts/GataStake.json";
 import { chainInfo, REACT_APP_NETWORK_ID } from "../chainInfo";
 import axios from "axios";
 
@@ -10,14 +10,14 @@ import axios from "axios";
 export const BASE_IPFS = "https://ipfs.io/ipfs/"
 export const currentNetwork = chainInfo[REACT_APP_NETWORK_ID].REACT_APP_NETWORK_ID;
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-// export const TYCHE_STAKE_ADDRESS = {280: "0x126632D21Cc03018061D7a59731bdaCC3C38faA4", 324: "0x3F0fb544F4A37676B32989cE6d23749a099eaC12", 84531: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 8453: "0xF0bfbe94FD99fa8ec2AAdE380b2868C95Bd6AC03"};
-// export const TYCHE_STAKE_ADDRESS = {280: "0xD4bb917Ab6270e96AAF8197DB1dA36A0cB761999", 324: "0x3F0fb544F4A37676B32989cE6d23749a099eaC12", 84531: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 8453: "0xF0bfbe94FD99fa8ec2AAdE380b2868C95Bd6AC03"};
+// export const Gata_STAKE_ADDRESS = {280: "0x126632D21Cc03018061D7a59731bdaCC3C38faA4", 324: "0x3F0fb544F4A37676B32989cE6d23749a099eaC12", 84531: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 8453: "0xF0bfbe94FD99fa8ec2AAdE380b2868C95Bd6AC03"};
+// export const Gata_STAKE_ADDRESS = {280: "0xD4bb917Ab6270e96AAF8197DB1dA36A0cB761999", 324: "0x3F0fb544F4A37676B32989cE6d23749a099eaC12", 84531: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 8453: "0xF0bfbe94FD99fa8ec2AAdE380b2868C95Bd6AC03"};
 // 1234 local 0x4333C23a81913bF1cC337DC66998Ba8616edC4ed
-export const TYCHE_STAKE_ADDRESS = {
+export const Gata_STAKE_ADDRESS = {
   280: "0xC533bB0EDc59014517c4aa86bd21EDf409ed037D", 
   324: "0xD049063fF11B1029B27be87f117785E2A98d75c2", 
   84531: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 
-  8453: "0xacafdc807ba31e05335407b318c339b208ddb276", 
+  8453: "0xc33b2d4F95177561240069f2d4a582b603f0123e", 
   1234: '0xd09fC596021ec7E7681e182b9055ce14554Bf640', 
   100004: '0x1D26563A437b0C2b6b1BceDB592a99754A4639E9', 
   10781: '0xC22B9a94F78045aCd156F06D8Eb08C08a1A0E031',
@@ -34,9 +34,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xfcBD3207E738DCc5BFF115Aa5521a5d5631EbC85",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[280],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[280],
+      abi: GataStakeABI,
     },
   },
   324: {
@@ -48,22 +48,22 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xfcBD3207E738DCc5BFF115Aa5521a5d5631EbC85",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[324],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[324],
+      abi: GataStakeABI,
     },
   },  8453: {
     ERC20: {
-      address: '0x63E56e3d87Df37e01F24c94e67A88B7949f9D531',
+      address: '0xdA1030Df43123ED7D3f52A9Fc2426A69e538AF85',
       abi: ERC20ABI,
     },
     ERC721: {
-      address: "0xfcBD3207E738DCc5BFF115Aa5521a5d5631EbC85",
+      address: "0xCB55Cb70ed4965Db3A219D316b6c41d4Ac49bBB8",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[8453],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[8453],
+      abi: GataStakeABI,
     },
   },  84531: {
     ERC20: {
@@ -74,9 +74,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xfcBD3207E738DCc5BFF115Aa5521a5d5631EbC85",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[84531],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[84531],
+      abi: GataStakeABI,
     },
   },
   // 1234: { // local testing
@@ -88,9 +88,9 @@ export const CONTRACTS_BY_NETWORK = {
   //     address: "0x74DEFdc2C1f4A918562CB3DEAb39e0C9EBf7f625",
   //     abi: ERC721ABI,
   //   },
-  //   TycheStake: {
-  //     address: TYCHE_STAKE_ADDRESS[1234],
-  //     abi: TycheStakeABI,
+  //   GataStake: {
+  //     address: Gata_STAKE_ADDRESS[1234],
+  //     abi: GataStakeABI,
   //   },
   // },
   1234: {
@@ -102,9 +102,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0x74DEFdc2C1f4A918562CB3DEAb39e0C9EBf7f625",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[1234],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[1234],
+      abi: GataStakeABI,
     },
   },
   100004: {
@@ -116,9 +116,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xe13Be783C3EDf41A88D61F4A50c33e7F7498Da9A",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[100004],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[100004],
+      abi: GataStakeABI,
     },
   },
   10781: {
@@ -130,9 +130,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xe13Be783C3EDf41A88D61F4A50c33e7F7498Da9A",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[10781],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[10781],
+      abi: GataStakeABI,
     },
   } ,
   28182: {
@@ -144,9 +144,9 @@ export const CONTRACTS_BY_NETWORK = {
       address: "0xfcBD3207E738DCc5BFF115Aa5521a5d5631EbC85",
       abi: ERC721ABI,
     },
-    TycheStake: {
-      address: TYCHE_STAKE_ADDRESS[28182],
-      abi: TycheStakeABI,
+    GataStake: {
+      address: Gata_STAKE_ADDRESS[28182],
+      abi: GataStakeABI,
     },
   },
 }

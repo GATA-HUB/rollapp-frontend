@@ -189,15 +189,21 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
-        "name": "collection",
+        "name": "stakeToken",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
         "name": "endTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "poolIndex",
         "type": "uint256"
       }
     ],
@@ -324,7 +330,7 @@
             "type": "uint256[]"
           }
         ],
-        "internalType": "struct TycheStakeMultiPoolSupport.UserInfo",
+        "internalType": "struct GataStakeMultiPoolSupport.UserInfo",
         "name": "",
         "type": "tuple"
       }
@@ -497,7 +503,7 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct TycheStakeMultiPoolSupport.PoolInfo",
+        "internalType": "struct GataStakeMultiPoolSupport.PoolInfo",
         "name": "",
         "type": "tuple"
       }
@@ -887,6 +893,29 @@
       }
     ],
     "name": "unstakeOne",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_stakeToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateEndTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

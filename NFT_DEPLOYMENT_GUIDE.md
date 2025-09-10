@@ -65,7 +65,73 @@ const nft = await NFTContract.deploy(
 );
 ```
 
-## Step 4: Deploy the NFT Contract
+## Step 4: Deploy the Token Contract
+
+Before deploying NFT contracts, you need to deploy the reward token (GATA) that will be used for staking rewards.
+
+### 4.1 Token Contract Overview
+
+The GATA token contract (`packages/contracts/contracts/token.sol`) features:
+- **ERC20 Standard**: Compatible with all wallets and exchanges
+- **Burnable**: Users can burn tokens to reduce supply
+- **Ownable**: Owner can mint new tokens and control transfers
+- **Transfer Lock**: Owner can temporarily lock/unlock all transfers
+- **Unlimited Supply**: No hard cap on token creation
+
+### 4.2 Deploy Token Contract
+
+1. **Navigate to contracts directory:**
+   ```bash
+   cd packages/contracts
+   ```
+
+2. **Set your private key:**
+   ```bash
+   export PRIVATE_KEY=your_private_key_without_0x_prefix
+   ```
+
+3. **Deploy token to Base:**
+   ```bash
+   npx hardhat deploy-token --network base
+   ```
+
+4. **Record the token address** from output (e.g., `0xdA1030Df43123ED7D3f52A9Fc2426A69e538AF85`)
+
+### 4.3 Mint Initial Token Supply
+
+After deployment, mint tokens for rewards and distribution:
+
+```bash
+npx hardhat mint-tokens --network base
+```
+
+This script will:
+- Mint 1 billion tokens to your specified address
+- Mint 1 billion tokens to the staking contract for rewards
+- Create a detailed minting record in `token-minting.json`
+
+### 4.4 Custom Token Minting
+
+To mint tokens to specific addresses, create a custom script:
+
+```typescript
+const tokenContract = await hre.ethers.getContractAt(
+  "Gata",
+  "0xYourTokenAddress"
+);
+
+// Mint 1 million tokens
+const amount = hre.ethers.utils.parseEther("1000000");
+await tokenContract.mint("0xRecipientAddress", amount);
+```
+
+**Important Token Functions:**
+- `mint(address, amount)`: Mint new tokens (owner only)
+- `burn(amount)`: Burn tokens from your balance
+- `lockTransfers()`: Prevent all transfers (owner only)
+- `unlockTransfers()`: Allow transfers again (owner only)
+
+## Step 5: Deploy the NFT Contract
 
 1. **Navigate to contracts directory:**
    ```bash
@@ -248,6 +314,60 @@ After deployment and configuration:
 2. **Staking**: Users can stake NFTs at `/stake`
 3. **Dashboard**: Staked NFTs show in `/dashboard` and `/myAssets`
 
+## Complete Deployment Workflow
+
+For a full platform deployment, follow this order:
+
+### 1. Deploy Core Contracts
+```bash
+# Deploy token contract
+npx hardhat deploy-token --network base
+
+# Deploy staking contract  
+npx hardhat deploy-stake --network base
+
+# Mint initial token supply
+npx hardhat mint-tokens --network base
+```
+
+### 2. Deploy NFT Collections
+```bash
+# Deploy paid NFT collection
+npx hardhat deploy-single-nft --network base
+
+# Deploy free NFT collection (optional)
+npx hardhat deploy-free-nft --network base
+```
+
+### 3. Create Staking Pools
+```bash
+# Create pool for paid NFT
+npx hardhat create-base-pool --network base
+
+# Create pool for free NFT (if deployed)
+npx hardhat create-free-nft-pool --network base
+```
+
+### 4. Update App Configuration
+- Update `env.ts` with new NFT addresses
+- Update `index.js` with contract configurations
+- Copy contract ABIs to web app
+
+### 5. Verification Commands
+```bash
+# Check token balances
+echo "User balance: $(cat token-minting.json | jq -r '.recipients[0].amount')"
+echo "Pool balance: $(cat token-minting.json | jq -r '.recipients[1].amount')"
+
+# Check NFT deployments
+echo "Paid NFT: $(cat nft-deployment.json | jq -r '.nft.address')"
+echo "Free NFT: $(cat free-nft-deployment.json | jq -r '.nft.address')"
+
+# Check pool creation
+echo "Pool 1: $(cat base-pool.json | jq -r '.poolIndex')"
+echo "Pool 2: $(cat free-nft-pool.json | jq -r '.poolIndex')"
+```
+
 ## Customizing NFT Parameters
 
 ### Free Minting NFT
@@ -303,6 +423,36 @@ echo "Live Mints: $(grep liveMints ../web/src/env.ts)"
 - **RPC**: https://mainnet.base.org
 - **Block Explorer**: https://basescan.org
 - **Default Network ID in App**: 8453
+
+## Deployed Contract Addresses (Base Mainnet)
+
+### Core Contracts
+| Contract | Address | Purpose |
+|----------|---------|---------|
+| **GATA Token** | `0xdA1030Df43123ED7D3f52A9Fc2426A69e538AF85` | ERC20 reward token |
+| **Staking Contract** | `0xc33b2d4F95177561240069f2d4a582b603f0123e` | Multi-pool NFT staking |
+
+### NFT Collections
+| Collection | Address | Type | Price |
+|------------|---------|------|-------|
+| **GATA NFT Collection** | `0xCB55Cb70ed4965Db3A219D316b6c41d4Ac49bBB8` | Premium | 0.019 ETH |
+| **GATA Free Collection** | `0xb24ac5D0C75b48A7F80af74937Ab88828fA4aA82` | Free | 0 ETH |
+
+### Staking Pools
+| Pool | NFT Collection | Reward Rate | Duration |
+|------|----------------|-------------|----------|
+| **Pool 0** | GATA NFT Collection | 1 GATA/second | 60 days |
+| **Pool 1** | GATA Free Collection | 2 GATA/second | 60 days |
+
+### Token Distribution
+| Recipient | Address | Amount | Purpose |
+|-----------|---------|--------|---------|
+| **User Wallet** | `0x7D22817D106f0a12dD117Ed9AF1A2496Bf106D07` | 1B GATA | Initial allocation |
+| **Staking Rewards** | `0xc33b2d4F95177561240069f2d4a582b603f0123e` | 1B GATA | Pool rewards |
+
+> **Total Supply**: 2 billion GATA tokens minted  
+> **Network**: All contracts deployed on Base Mainnet (Chain ID: 8453)  
+> **Explorer**: View contracts on [BaseScan](https://basescan.org)
 
 ## Support
 

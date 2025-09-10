@@ -4,24 +4,47 @@ import { nodes } from './getRpcUrl'
 import {chainInfo, REACT_APP_NETWORK_ID} from "../chainInfo";
 
  export const setupNetwork = async () => {
-
   const provider = window.ethereum
   if (provider) {
     const chainId = parseInt(REACT_APP_NETWORK_ID, 10)
+    
+    // Only allow network setup for Base network (8453) to prevent broken network addition
+    if (chainId !== 8453) {
+      console.log(`Network setup skipped for unsupported network: ${chainId}. Only Base (8453) is supported.`)
+      return false
+    }
+    
+    // Validate network configuration exists and has valid RPC URLs
+    const networkConfig = chainInfo[REACT_APP_NETWORK_ID]
+    if (!networkConfig || !networkConfig.REACT_APP_NODES || networkConfig.REACT_APP_NODES.length === 0) {
+      console.error(`Invalid network configuration for network ${chainId}`)
+      return false
+    }
+    
+    // Check for broken RPC URLs
+    const hasValidRPC = networkConfig.REACT_APP_NODES.some(url => 
+      url && !url.includes('dangerous-tiger-29.telebit.io')
+    )
+    
+    if (!hasValidRPC) {
+      console.error(`No valid RPC URLs found for network ${chainId}`)
+      return false
+    }
+    
     try {
       await provider.request({
         method: 'wallet_addEthereumChain',
         params: [
           {
             chainId: `0x${chainId.toString(16)}`,
-            chainName: `${chainInfo[REACT_APP_NETWORK_ID].REACT_APP_NETWORK}`,
+            chainName: `${networkConfig.REACT_APP_NETWORK}`,
             nativeCurrency: {
-              name: `${chainInfo[REACT_APP_NETWORK_ID].REACT_APP_COIN}`,
-              symbol: `${chainInfo[REACT_APP_NETWORK_ID].REACT_APP_COIN}`,
+              name: `${networkConfig.REACT_APP_COIN}`,
+              symbol: `${networkConfig.REACT_APP_COIN}`,
               decimals: 18,
             },
-            rpcUrls: chainInfo[REACT_APP_NETWORK_ID]['REACT_APP_NODES'],
-            blockExplorerUrls: [`${chainInfo[REACT_APP_NETWORK_ID].REACT_APP_BLOCK_EXPLORER}`],
+            rpcUrls: networkConfig.REACT_APP_NODES,
+            blockExplorerUrls: [`${networkConfig.REACT_APP_BLOCK_EXPLORER}`],
           },
         ],
       })
@@ -38,7 +61,7 @@ import {chainInfo, REACT_APP_NETWORK_ID} from "../chainInfo";
       return true
     }
   } else {
-    console.error("Can't setup the zkSync chain on metamask because window.ethereum is undefined")
+    console.error("Can't setup the network on wallet because window.ethereum is undefined")
     return false
   }
 }

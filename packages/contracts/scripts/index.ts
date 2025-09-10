@@ -6,4 +6,5 @@ require("./deploy-free-nft");
 require("./deploy-stake");
 require("./create-pools");
 require("./create-base-pool");
-require("./create-free-nft-pool"); 
+require("./create-free-nft-pool");
+require("./mint-tokens"); 

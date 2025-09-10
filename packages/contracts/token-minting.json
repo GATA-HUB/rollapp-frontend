@@ -1,0 +1,18 @@
+{
+  "network": "base",
+  "tokenContract": "0xdA1030Df43123ED7D3f52A9Fc2426A69e538AF85",
+  "recipients": [
+    {
+      "address": "0x7D22817D106f0a12dD117Ed9AF1A2496Bf106D07",
+      "amount": "1000000000.0",
+      "purpose": "User allocation"
+    },
+    {
+      "address": "0xc33b2d4F95177561240069f2d4a582b603f0123e",
+      "amount": "1000000000.0",
+      "purpose": "Staking rewards pool"
+    }
+  ],
+  "totalMinted": "2000000000.0",
+  "timestamp": "2025-09-10T00:56:16.785Z"
+}
